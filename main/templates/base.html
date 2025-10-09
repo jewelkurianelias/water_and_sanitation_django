@@ -7,165 +7,259 @@
   <link rel="icon" type="image/png" href="{% static 'lighton_logo.png' %}">
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- We boot the theme super early, so we avoid the flash... and we read localStorage... then we set data-theme. -->
+  
+  <!-- Boot theme (runs before paint) -->
   <script>
     (function () {
       try {
-        var saved = localStorage.getItem('theme'); // 'light' | 'dark' | null
+        var saved = localStorage.getItem('theme');
         var isLight;
-        if (saved === 'light')      { isLight = true; }   // we remember the choice and respect it
-        else if (saved === 'dark')  { isLight = false; }  // and if it’s dark we keep it dark
-        else {
-          // we fall back to OS preference, so the page feels native, then we apply it
-          isLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        }
+        if (saved === 'light')      { isLight = true; }
+        else if (saved === 'dark')  { isLight = false; }
+        else { isLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches; }
         document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
-      } catch(e) { /* we keep silent because this is just UX sugar */ }
+      } catch(e) {}
     })();
   </script>
 
-  <!-- We import Bootstrap just for the navbar collapse... and it’s tiny... so we’re fine. -->
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- We preload a few images so the header looks crisp... and the loading mask feels instant. -->
+  <!-- Preloads -->
   <link rel="preload" href="{% static 'lightoff_logo.png' %}" as="image">
   <link rel="preload" href="{% static 'lighton_logo.png' %}" as="image">
-  <link rel="preload" href="{% static 'giphy1.gif' %}" as="image"><!-- loading GIF -->
-  <!-- We also preload the vessels, so the first sail is smooth, then the animation starts nicely. -->
+  <link rel="preload" href="{% static 'giphy1.gif' %}" as="image">
   <link rel="preload" href="{% static 'submarine.gif' %}" as="image">
   <link rel="preload" href="{% static 'boat.gif' %}" as="image">
+  <!-- Mascot per-step preloads -->
+  <link rel="preload" href="{% static 'platypus_step1.png' %}" as="image">
+  <link rel="preload" href="{% static 'platypus_step2.png' %}" as="image">
+  <link rel="preload" href="{% static 'platypus_step3.png' %}" as="image">
+  <link rel="preload" href="{% static 'platypus_step4.png' %}" as="image">
+  <link rel="preload" href="{% static 'platypus_step5.png' %}" as="image">
+  <!-- Guide button icon preload -->
+  <link rel="preload" href="{% static 'tour_guide.png' %}" as="image">
 
   {% block head_extras %}{% endblock %}
-
-  <!-- We moved inline styles to a proper static file, so caching works and diffs are cleaner. -->
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
-
   <link href="https://fonts.googleapis.com/css2?family=Joti+One&display=swap" rel="stylesheet">
 
+  <style>
+    @font-face{
+      font-family: "Super Shape";
+      src: url("{% static 'fonts/super-shape/SuperShiny-0v0rG.ttf' %}") format("truetype");
+      font-weight: 200; font-style: normal; font-display: swap;
+    }
+    #loadingMask .loading-text{
+      font-family: "Super Shape", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 200; letter-spacing: .5px;
+    }
+
+    /* ==================== Nav Guide bar ==================== */
+    #navGuideBar{
+      position: relative;
+      z-index: 3000;             /* make button above water/boat layers */
+      display: flex;
+      justify-content: flex-end;
+      padding: .25rem 1rem .5rem;
+      gap: .5rem;
+    }
+
+    /* To enlarge the Guide button: tweak --guide-scale or font/padding variables */
+    #navGuideBtn{
+      --guide-scale: 1.3;
+      --guide-font: 1rem;
+      --guide-pad-y: .45rem;
+      --guide-pad-x: .85rem;
+    }
+
+    .guide-btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      padding: var(--guide-pad-y, .45rem) var(--guide-pad-x, .85rem);
+      border-radius:999px;
+      font-size: var(--guide-font, .95rem);
+      font-weight:800; letter-spacing:.2px; line-height:1;
+      user-select:none; cursor:pointer;
+      transform-origin: 100% 0%;
+      transition: transform .15s ease, opacity .2s ease, filter .2s ease;
+      transform: scale(var(--guide-scale, 1));
+      position: relative; overflow: hidden;
+      border: 1px solid #c99700;
+
+      /* gold gradient + glow */
+      background: linear-gradient(145deg,#a97700 0%,#ffd700 35%,#fff4b1 50%,#ffd700 65%,#a97700 100%);
+      color:#111827;
+      box-shadow:
+        inset 0 1px 0 #fff7cc,
+        0 6px 18px rgba(255,215,0,.28),
+        0 0 14px rgba(255,215,0,.35);
+      text-shadow: 0 1px 0 rgba(255,255,255,.4);
+      filter: saturate(1.1);
+      animation: guideJiggle 1.9s ease-in-out infinite;
+    }
+    .guide-btn:hover{ filter: saturate(1.25) brightness(1.03); }
+    .guide-btn:active{ transform: scale(calc(var(--guide-scale,1) * .98)); }
+
+    .guide-btn::before{
+      content:"";
+      position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 35%, rgba(255,255,255,0) 60%);
+      transform: translateX(-120%);
+      animation: sheen 2.8s linear infinite;
+      mix-blend-mode: screen;
+    }
+    @keyframes sheen { to { transform: translateX(120%); } }
+    @keyframes guideJiggle{
+      0%,100%{ transform: translateY(0) scale(var(--guide-scale,1)) rotate(0deg); }
+      30% { transform: translateY(-1px) scale(var(--guide-scale,1)) rotate(-0.35deg); }
+      60% { transform: translateY(1px)  scale(var(--guide-scale,1)) rotate(0.25deg); }
+    }
+    .guide-btn .guide-icon{ width:16px; height:16px; flex:0 0 16px; }
+    .guide-btn .label{ position: relative; top: 1px; }
+
+    /* ==================== Spotlight overlay ==================== */
+    #spotlightOverlay{ position:fixed; inset:0; z-index:10000; display:none; }
+    #spotlightOverlay.active{ display:block; }
+    #spotlightOverlay .blocker{ position:fixed; inset:0; pointer-events:auto; background: transparent; }
+    #spotlightOverlay .hole{
+      position:fixed; pointer-events:auto; border-radius:12px;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,.64);
+      transition: top .28s ease, left .28s ease, width .28s ease, height .28s ease, border-radius .28s ease;
+    }
+    #spotlightOverlay .hole::after{
+      content:""; position:absolute; inset:-6px; border-radius:inherit;
+      border:2px solid rgba(255,255,255,.85);
+      box-shadow: 0 0 12px rgba(255,255,255,.35), inset 0 0 8px rgba(255,255,255,.15);
+      pointer-events:none;
+    }
+
+    /* Mascots (positioned on overlay, follow the target element) */
+    #spotlightOverlay .mascot{
+      position: fixed;
+      width: var(--mascot-size, 200px);
+      pointer-events: none; user-select: none;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.45));
+      opacity: .98;
+      animation: mascotBob 3.6s ease-in-out infinite;
+      display: none;
+      z-index: 10001;
+    }
+    @keyframes mascotBob{ 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-4px) } }
+
+    /* Coach card on overlay */
+    #spotlightOverlay .coach{
+      position:fixed; max-width:min(420px, 88vw);
+      background: color-mix(in srgb, var(--card-bg, #0f172a) 88%, transparent);
+      color: var(--text, #e5e7eb);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      padding:14px 14px 12px; transition: top .28s ease, left .28s ease;
+      z-index: 10002;
+    }
+    #spotlightOverlay .coach h3{ font-size:1rem; margin:.1rem 0 .35rem; font-weight:800; }
+    #spotlightOverlay .coach p{ margin:0 0 .6rem; font-size:.95rem; line-height:1.35; color: var(--muted, #a6b0bf); }
+    #spotlightOverlay .coach .actions{ display:flex; justify-content:space-between; gap:.5rem; }
+    #spotlightOverlay .coach .actions .left,
+    #spotlightOverlay .coach .actions .right{ display:flex; gap:.5rem; }
+    #spotlightOverlay .coach button{
+      border-radius:999px; border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06); color: var(--text,#fff);
+      padding:.35rem .7rem; font-weight:700; font-size:.9rem; cursor:pointer;
+    }
+    #spotlightOverlay .coach button.primary{ background:#ffd166; color:#111827; border-color:#f4c24a; }
+    #spotlightOverlay .coach button:disabled{ opacity:.6; cursor:not-allowed; }
+
+    @media (max-width: 991.98px){
+      #navGuideBar{ padding-top:.35rem; }
+    }
+  </style>
 </head>
 <body>
-  <!-- We keep the header sticky, and we keep it light, so navigation feels stable. -->
+  <!-- Header -->
   <header id="siteHeader" class="container-fluid">
     <div class="d-flex align-items-center w-100 gap-2 position-relative">
-      <!-- Brand: we show the platypus logo, and we keep it responsive, so it scales on phones. -->
       <div class="brand text-center text-lg-start" aria-label="Brand">
         <span class="logo" aria-hidden="true">
           <img id="brandLogo" src="{% static 'lightoff_logo.png' %}" alt="Brand logo (lights off)">
         </span>
         <h1 class="m-0">
-          <img src="{% static 'Platypure.png' %}" 
-              alt="Platypure Logo" 
-              class="img-fluid" 
-              id="platypureLogo">
+          <img src="{% static 'Platypure.png' %}" alt="Platypure Logo" class="img-fluid" id="platypureLogo">
         </h1>
       </div>
 
-      <!-- On small screens we toggle the menu... and we keep it accessible, so keyboard users are happy. -->
-      <button class="hamburger-btn d-lg-none ms-auto"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#primaryNav"
-              aria-controls="primaryNav"
-              aria-expanded="false"
-              aria-label="Toggle menu">☰</button>
+      <button class="hamburger-btn d-lg-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#primaryNav" aria-controls="primaryNav" aria-expanded="false" aria-label="Toggle menu">☰</button>
 
       {% with current=request.resolver_match.url_name %}
-      <!-- Our primary nav: we highlight the active page, and we keep classes simple, so teammates can read it. -->
-      <nav id="primaryNav"
-           class="menu collapse d-lg-flex flex-lg-row justify-content-center gap-3 mx-lg-auto"
-           aria-label="Primary">
+      <nav id="primaryNav" class="menu collapse d-lg-flex flex-lg-row justify-content-center gap-3 mx-lg-auto" aria-label="Primary">
         <a href="{% url 'home' %}" class="{% if current == 'home' %}active{% endif %}">
           <span class="slot-window"><span class="slot-track">
             <span class="slot-item">Home</span><span class="slot-item" aria-hidden="true">Home</span>
           </span></span>
         </a>
 
-        <!-- We group “water insights” under a dropdown, and we keep it short, so the header stays clean. -->
-        <div class="dropdown menu-item">
-          <a href="#"
-             class="menu-link has-submenu {% if current == 'explore_water_quality' or current == 'pollution_sources' or current == 'future_family_safety' %}active{% endif %}"
-             aria-haspopup="true"
-             aria-expanded="{% if current == 'explore_water_quality' or current == 'pollution_sources' or current == 'future_family_safety' %}true{% else %}false{% endif %}">
-            <span class="slot-window"><span class="slot-track">
-              <span class="slot-item">Water Quality Predictions ▼</span>
-              <span class="slot-item" aria-hidden="true">Quality Predictions ▼</span>
-            </span></span>
-          </a>
-          <div class="submenu" role="menu">
-            <!-- we keep older pages commented, so we can bring them back later without hunting history -->
-            <!-- <a role="menuitem" href="{% url 'explore_water_quality' %}" class="{% if current == 'explore_water_quality' %}active{% endif %}">[Explore Water Quality]</a>
-            <a role="menuitem" href="{% url 'pollution_sources' %}" class="{% if current == 'pollution_sources' %}active{% endif %}">[Pollution Sources]</a>-->
-            <a role="menuitem" href="{% url 'future_family_safety' %}" class="{% if current == 'future_family_safety' %}active{% endif %}">Suburb</a>
-          </div>
-        </div>
+        <a href="{% url 'future_family_safety' %}" class="{% if current == 'future_family_safety' %}active{% endif %}">
+          <span class="slot-window"><span class="slot-track">
+            <span class="slot-item">Know Water Quality Near You</span><span class="slot-item" aria-hidden="true">Know Water Quality Near You</span>
+          </span></span>
+        </a>
 
-        <!-- Kids dropdown -->
         <div class="dropdown menu-item kids-nav">
-          <a href="#"
-            class="kids-link menu-link has-submenu {% if current == 'animal_cards' or current == 'animal_map' or current == 'diving_game' %}active{% endif %}"
-            aria-haspopup="true"
-            aria-controls="kids-submenu"
-            aria-expanded="{% if current == 'animal_cards' or current == 'animal_map' or current == 'diving_game' %}true{% else %}false{% endif %}">
+          <a href="#" class="kids-link menu-link has-submenu {% if current == 'animal_cards' or current == 'animal_map' or current == 'diving_game' %}active{% endif %}" aria-haspopup="true" aria-controls="kids-submenu" aria-expanded="{% if current == 'animal_cards' or current == 'animal_map' or current == 'diving_game' %}true{% else %}false{% endif %}">
             <span class="slot-window"><span class="slot-track">
               <span class="slot-item">
-                <!-- icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" height="21" viewBox="0 -960 960 960" width="21" fill="#75FB4C" aria-hidden="true">
-                  <path d="M432-240h24l168-240h-96v-144h-24L336-384h96v144Zm48 144q-130 0-221-91t-91-221q0-97 74.5-205T480-864q166 150 239 257t73 199q0 130-91 221T480-96Zm0-72q100 0 170-70t70-170q0-68-54-149T480-769Q348-638 294-557t-54 149q0 100 70 170t170 70Zm0-312Z"/>
-                </svg>
-                For Kids – Learn & Play ▼
+                <img src="{% static 'platypus_nav.png' %}" alt="Platypus Icon" width="26" height="26" aria-hidden="true">
+                For Kids – Know & Play ▼
               </span>
-              <span class="slot-item" aria-hidden="true">For Kids – Learn & Play ▼</span>
+              <span class="slot-item" aria-hidden="true">For Kids – Know & Play ▼</span>
             </span></span>
           </a>
-
           <div id="kids-submenu" class="submenu" role="menu">
-            <a role="menuitem" href="{% url 'animal_cards' %}" class="{% if current == 'animal_cards' %}active{% endif %}">Animal Cards</a>
-            <a role="menuitem" href="{% url 'animal_map' %}" class="{% if current == 'animal_map' %}active{% endif %}">Animal Map</a>
-            <!--<a role="menuitem" href="{% url 'diving_game' %}" class="{% if current == 'diving_game' %}active{% endif %}">Diving Game</a>-->
+            <a role="menuitem" href="{% url 'animal_cards' %}" class="{% if current == 'animal_cards' %}active{% endif %}">
+              <img src="{% static 'card_nav.png' %}" alt="Platypus Icon" width="26" height="26" aria-hidden="true"> Animal Cards</a>
+            <a role="menuitem" href="{% url 'animal_map' %}" class="{% if current == 'animal_map' %}active{% endif %}">
+              <img src="{% static 'treasure_map_nav.png' %}" alt="Platypus Icon" width="26" height="26" aria-hidden="true"> Animal Map</a>
           </div>
         </div>
 
-
-
-        <!--  <a href="{% url 'about_water_sanitation' %}" class="{% if current == 'about_water_sanitation' %}active{% endif %}">
+        <a href="{% url 'about_water_sanitation' %}" class="{% if current == 'about_water_sanitation' %}active{% endif %}">
           <span class="slot-window"><span class="slot-track">
-            <span class="slot-item">About Our Water</span><span class="slot-item" aria-hidden="true">About Our Water</span>
+            <span class="slot-item">About Us</span><span class="slot-item" aria-hidden="true">About Us</span>
           </span></span>
-        </a>-->
+        </a>
       </nav>
       {% endwith %}
 
-      <!-- The light switch: we keep the text simple, and we sync the logo, so the brand feels alive. -->
-      <button id="lightBtn" class="dashboard-btn ms-lg-3" aria-pressed="false" aria-label="Toggle lights">
-        Lights: Off
-      </button>
+      <button id="lightBtn" class="dashboard-btn ms-lg-3" aria-pressed="false" aria-label="Toggle lights">Lights: Off</button>
     </div>
   </header>
 
-  <!-- We mount the water canvas behind everything, and we lock it full-screen, so it feels immersive. -->
-  <div id="water-stage" aria-hidden="true">
-    <canvas id="water-canvas"></canvas>
+  {% with current=request.resolver_match.url_name %}
+  {% if current == 'home' %}
+  <!-- Guide bar (HOME only) -->
+  <div id="navGuideBar" class="container-fluid">
+    <button id="navGuideBtn" class="guide-btn" aria-label="Open navigation guide" type="button" title="Open quick guide">
+      <img class="guide-icon" src="{% static 'tour_guide.png' %}" alt="" aria-hidden="true">
+      <span class="label">Guide</span>
+    </button>
   </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Canvas layers -->
+  <div id="water-stage" aria-hidden="true"><canvas id="water-canvas"></canvas></div>
   <div id="ripple-layer" aria-hidden="true"></div>
 
-  <!-- We also have a vessels layer… and we let the boat/sub glide… so the page feels playful. -->
   <div class="vessels-layer" id="vessels" aria-hidden="true">
     <img id="submarineGif" class="vessel sub" src="{% static 'submarine.gif' %}" alt="">
     <img id="boatGif" class="vessel boat" src="{% static 'boat.gif' %}" alt="">
   </div>
 
-  <!-- Our main content goes here… and we keep blocks clean, so each page can focus on one story. -->
-  <main class="wrap">
-    {% block content %}{% endblock %}
-  </main>
+  <main class="wrap">{% block content %}{% endblock %}</main>
 
-  <!-- Tiny footer… and we keep the year dynamic, so we don’t forget to update it later. -->
-  <footer>
-    © {% now "Y" %} Water & Sanitation • All rights reserved.
-  </footer>
+  <footer>© {% now "Y" %} Platypure • All rights reserved.</footer>
 
-  <!-- Loading mask: we show it during internal navigations, and we hide it smartly, so it feels fast. -->
+  <!-- Loading mask -->
   <div id="loadingMask" aria-hidden="true">
     <div class="loading-card" role="status" aria-live="polite">
       <img class="loading-gif" src="{% static 'giphy1.gif' %}" alt="Loading..." style="width:740px;height:460px;display:block;">
@@ -173,33 +267,49 @@
     </div>
   </div>
 
-  <!-- Shared JS: we namespace things with water_* so teammates see the theme and avoid collisions. -->
+  {% with current=request.resolver_match.url_name %}
+  {% if current == 'home' %}
+  <!-- Spotlight overlay (HOME only) -->
+  <div id="spotlightOverlay" aria-hidden="true">
+    <div class="blocker" tabindex="-1"></div>
+    <div class="hole" aria-hidden="true"></div>
+
+    <!-- Mascots (one per step) -->
+    <img id="mascotStep1" class="mascot" src="{% static 'platypus_step1.png' %}" alt="Guide mascot for step 1">
+    <img id="mascotStep2" class="mascot" src="{% static 'platypus_step2.png' %}" alt="Guide mascot for step 2">
+    <img id="mascotStep3" class="mascot" src="{% static 'platypus_step3.png' %}" alt="Guide mascot for step 3">
+    <img id="mascotStep4" class="mascot" src="{% static 'platypus_step4.png' %}" alt="Guide mascot for step 4">
+    <img id="mascotStep5" class="mascot" src="{% static 'platypus_step5.png' %}" alt="Guide mascot for step 5">
+
+    <div class="coach" role="dialog" aria-modal="true" aria-live="polite" aria-label="Navigation guide" style="top: 20px; left: 20px;">
+      <h3 class="title">Guide</h3>
+      <p class="desc">Quick tour.</p>
+      <div class="actions">
+        <div class="left">
+          <button type="button" class="btn-prev">Back</button>
+        </div>
+        <div class="right">
+          <button type="button" class="btn-skip">Skip</button>
+          <button type="button" class="btn-next primary">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- ===== JS ===== -->
   <script>
-    /************ GSAP Multi-CDN Loading (we try multiple CDNs… and we stop at the first that works) ************/
+    /************ GSAP loader ************/
     const water_GSAP_URLS = [
       "https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js",
       "https://unpkg.com/gsap@3.12.5/dist/gsap.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
     ];
-    function water_load_script(url){
-      return new Promise((resolve,reject)=>{
-        const s=document.createElement('script');
-        s.src=url; s.async=true;
-        s.onload=()=>resolve(url);
-        s.onerror=()=>reject(url);
-        document.head.appendChild(s);
-      });
-    }
-    async function water_ensure_gsap(){
-      if(window.gsap) return true;                                   // we already have it, and we reuse it, so no extra fetch
-      for(const url of water_GSAP_URLS){                              // we iterate through options, and we bail out early, so it’s quick
-        try{ await water_load_script(url); if(window.gsap) return true; }catch(e){}
-      }
-      console.error("[GSAP] failed to load from all CDNs.");          // we log once, and we degrade gracefully, so the app still runs
-      return false;
-    }
+    function water_load_script(url){ return new Promise((resolve,reject)=>{ const s=document.createElement('script'); s.src=url; s.async=true; s.onload=()=>resolve(url); s.onerror=()=>reject(url); document.head.appendChild(s); }); }
+    async function water_ensure_gsap(){ if(window.gsap) return true; for(const url of water_GSAP_URLS){ try{ await water_load_script(url); if(window.gsap) return true; }catch(e){} } console.error("[GSAP] failed to load from all CDNs."); return false; }
 
-    /************ Theme switching (we store the choice… and we broadcast a custom event… then the water reacts) ************/
+    /************ Theme ************/
     const water_btn_light = document.getElementById("lightBtn");
     const water_html_root = document.documentElement;
     const water_logo_img  = document.getElementById("brandLogo");
@@ -208,67 +318,44 @@
     let water_is_light    = water_html_root.getAttribute("data-theme") === "light";
 
     function water_update_logo(isLight){
-      water_logo_img.src = isLight ? WATER_LOGO_LIGHT : WATER_LOGO_DARK;  // we swap image source, and we keep alt in sync
+      water_logo_img.src = isLight ? WATER_LOGO_LIGHT : WATER_LOGO_DARK;
       water_logo_img.alt = isLight ? "Brand logo (lights on)" : "Brand logo (lights off)";
     }
-    function water_update_button(isLight){
-      water_btn_light.textContent = `∕`;  // we keep the label friendly, and we toggle aria-pressed
-      water_btn_light.setAttribute("aria-pressed", String(isLight));
-    }
-    water_update_button(water_is_light);
-    water_update_logo(water_is_light);
+    function water_update_button(isLight){ water_btn_light.textContent = `∕`; water_btn_light.setAttribute("aria-pressed", String(isLight)); }
+    water_update_button(water_is_light); water_update_logo(water_is_light);
 
     function water_set_theme(nextIsLight){
-      // we normalize the flag, and we write attributes, so CSS variables flip instantly
       water_is_light = !!nextIsLight;
-      water_html_root.setAttribute("data-theme", water_is_light ? "light" : "dark");
-      water_update_button(water_is_light);
-      water_update_logo(water_is_light);
+      water_html_root.setAttribute("data-theme", water_is_light ? 'light' : 'dark');
+      water_update_button(water_is_light); water_update_logo(water_is_light);
       try { localStorage.setItem('theme', water_is_light ? 'light' : 'dark'); } catch(e){}
-      // we sync the browser’s theme-color, so mobile UIs look consistent, then we notify sub-systems
-      let meta=document.querySelector('meta[name="theme-color"]');
-      if(!meta){ meta=document.createElement("meta"); meta.name="theme-color"; document.head.appendChild(meta); }
+      let meta=document.querySelector('meta[name="theme-color"]'); if(!meta){ meta=document.createElement("meta"); meta.name="theme-color"; document.head.appendChild(meta); }
       meta.content=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
-      // we broadcast, and the canvas/vessels can listen, so animations react without coupling
       window.dispatchEvent(new CustomEvent('themechange', { detail: { isLight: water_is_light } }));
-      if (window.water_stage && window.water_stage.transitionTo){
-        window.water_stage.transitionTo(water_is_light);
-      }
+      if (window.water_stage && window.water_stage.transitionTo){ window.water_stage.transitionTo(water_is_light); }
     }
     water_btn_light.addEventListener("click",()=>{ water_set_theme(!water_is_light); });
-    window.addEventListener('storage', (e)=>{
-      // we listen to cross-tab storage changes, and we sync state, so multiple tabs stay consistent
-      if (e.key === 'theme' && e.newValue) {
-        const wantLight = e.newValue === 'light';
-        if (wantLight !== water_is_light) water_set_theme(wantLight);
-      }
-    });
+    window.addEventListener('storage',(e)=>{ if (e.key === 'theme' && e.newValue){ const wantLight = e.newValue === 'light'; if (wantLight !== water_is_light) water_set_theme(wantLight); }});
 
-    /* We reset the collapse styles on breakpoint changes… and we avoid weird heights… so the layout doesn’t jump. */
+    /* Collapse reset at breakpoints */
     function water_reset_nav_for_breakpoint(){
       const nav = document.getElementById('primaryNav');
       if (!nav) return;
       if (window.innerWidth >= 992){
-        nav.classList.remove('collapsing');
-        nav.classList.add('show');
-        nav.style.removeProperty('height');
-        nav.style.removeProperty('visibility');
-        nav.style.removeProperty('display');
+        nav.classList.remove('collapsing'); nav.classList.add('show');
+        nav.style.removeProperty('height'); nav.style.removeProperty('visibility'); nav.style.removeProperty('display');
       } else {
-        nav.style.removeProperty('height');
-        nav.style.removeProperty('visibility');
-        nav.style.removeProperty('display');
+        nav.style.removeProperty('height'); nav.style.removeProperty('visibility'); nav.style.removeProperty('display');
       }
     }
     window.addEventListener('resize', water_reset_nav_for_breakpoint);
     window.addEventListener('load',   water_reset_nav_for_breakpoint);
 
-    /************ Background Ripple (we animate small dots… and we avoid header/banners… so it looks subtle) ************/
+    /************ Background Ripple ************/
     function water_init_background_ripple(){
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReduced) return;                         // we respect the user’s preference… so accessibility comes first
-      const layer    = document.getElementById('ripple-layer');
-      if (!layer || !window.gsap) return;
+      if (prefersReduced) return;
+      const layer = document.getElementById('ripple-layer'); if (!layer || !window.gsap) return;
       const headerEl = document.getElementById('siteHeader');
       const bannerEl = document.getElementById('bannerHero');
 
@@ -302,37 +389,24 @@
         gsap.killTweensOf(el);
         gsap.fromTo(el,{scale:0.25,opacity:0.7},{scale:1.7,opacity:0,duration:dur,ease:'sine.out'});
       }
-      // we expose a tiny hook for fun, and we name it clearly, so teammates can call it in demos
-      window.water_spawn_ripple = function(x,y,v){
-        if (blocked) return;
-        spawn(x,y,v);
-      };
+      window.water_spawn_ripple = function(x,y,v){ if (blocked) return; spawn(x,y,v); };
 
       let rafPending=false, queuedEvent=null;
       function handlePointer(e, forceV){
         if (blocked) return;
         const now=performance.now(); if(now-lastT<MIN_DT) return;
         const x=e.clientX, y=e.clientY; if(isInDeadZone(x,y)) return;
-        let v=0.6;
-        if(forceV!=null){ v=forceV; }
-        else if(lastX!==null){ const dx=x-lastX; const dy=y-lastY; const dt=(now-lastT); v=Math.hypot(dx,dy)/Math.max(1,dt); }
+        let v=0.6; if(forceV!=null){ v=forceV; } else if(lastX!==null){ const dx=x-lastX; const dy=y-lastY; const dt=(now-lastT); v=Math.hypot(dx,dy)/Math.max(1,dt); }
         lastX=x; lastY=y; lastT=now; spawn(x,y,v);
       }
-      function onMove(e){
-        if (blocked) return;
-        queuedEvent=e;
-        if(!rafPending){
-          rafPending=true;
-          requestAnimationFrame(()=>{ if(queuedEvent) handlePointer(queuedEvent,null); rafPending=false; queuedEvent=null; });
-        }
-      }
+      function onMove(e){ if (blocked) return; queuedEvent=e; if(!rafPending){ rafPending=true; requestAnimationFrame(()=>{ if(queuedEvent) handlePointer(queuedEvent,null); rafPending=false; queuedEvent=null; }); } }
       window.addEventListener('pointermove', onMove, { passive:true });
       window.addEventListener('pointerdown', e=>handlePointer(e,1.2), { passive:true });
     }
 
-    /************ Water surface (we draw 3 layered sine-waves… and we lerp colors… so it feels like real water) ************/
+    /************ Water canvas ************/
     function water_init_stage(){
-      if (!window.gsap) return null;                                  // we need gsap for tweens, and we bail if missing
+      if (!window.gsap) return null;
       const canvas = document.getElementById('water-canvas');
       const ctx = canvas.getContext('2d');
       const DPR = window.devicePixelRatio || 1;
@@ -345,349 +419,301 @@
       const lerp = (a,b,t)=> a+(b-a)*t;
       function water_gradient(){
         const t = state.colorT;
-        const top = [
-          Math.round(lerp(darkTop[0], lightTop[0], t)),
-          Math.round(lerp(darkTop[1], lightTop[1], t)),
-          Math.round(lerp(darkTop[2], lightTop[2], t)),
-        ];
-        const bot = [
-          Math.round(lerp(darkBot[0], lightBot[0], t)),
-          Math.round(lerp(darkBot[1], lightBot[1], t)),
-          Math.round(lerp(darkBot[2], lightBot[2], t)),
-        ];
+        const top = [ Math.round(lerp(darkTop[0], lightTop[0], t)), Math.round(lerp(darkTop[1], lightTop[1], t)), Math.round(lerp(darkTop[2], lightTop[2], t)) ];
+        const bot = [ Math.round(lerp(darkBot[0], lightBot[0], t)), Math.round(lerp(darkBot[1], lightBot[1], t)), Math.round(lerp(darkBot[2], lightBot[2], t)) ];
         const g = ctx.createLinearGradient(0,0,0,vh);
         g.addColorStop(0, `rgba(${top[0]},${top[1]},${top[2]},${lerp(0.90,0.92,t)})`);
         g.addColorStop(1, `rgba(${bot[0]},${bot[1]},${bot[2]},${lerp(0.85,0.88,t)})`);
         return g;
       }
 
-      function resize(){
-        vw = window.innerWidth; vh = window.innerHeight;
-        canvas.width  = vw * DPR; canvas.height = vh * DPR;
-        canvas.style.width = vw+'px'; canvas.style.height = vh+'px';
-        ctx.setTransform(DPR,0,0,DPR,0,0);
-        waves.forEach(w=>w.resize(vw,vh));
-      }
+      function resize(){ vw=window.innerWidth; vh=window.innerHeight; canvas.width=vw*DPR; canvas.height=vh*DPR; canvas.style.width=vw+'px'; canvas.style.height=vh+'px'; ctx.setTransform(DPR,0,0,DPR,0,0); waves.forEach(w=>w.resize(vw,vh)); }
       window.addEventListener('resize', resize);
 
       function createWave(opts){
-        const w = Object.assign({
-          amplitude: 24, ampHome: 24, duration: 3, frequency: 2, segments: 120,
-          width: vw, height: vh, x: 0, y: 0, points: [], tweens: []
-        }, opts||{});
-
+        const w = Object.assign({ amplitude:24, ampHome:24, duration:3, frequency:2, segments:120, width:vw, height:vh, x:0, y:0, points:[], tweens:[] }, opts||{});
         function kill(){ w.tweens.forEach(t=>t.kill()); w.tweens.length=0; w.points.length=0; }
-        function init(){
-          kill();
-          const seg = w.segments;
-          const dx = w.width/seg;
-          for (let i=0;i<=seg;i++){
-            const p = { x: w.x + i*dx, y: 1 };
-            const tw = gsap.to(p, { duration:w.duration, y:-1, ease:'sine.inOut', repeat:-1, yoyo:true })
-                           .progress((i/seg)*w.frequency);
-            w.tweens.push(tw); w.points.push(p);
-          }
-        }
-        function resize(width,height){
-          w.width=width; w.height=height;
-          const dx = w.width/w.segments;
-          for(let i=0;i<w.points.length;i++){ w.points[i].x = w.x + i*dx; }
-        }
-        function draw(startY){
-          const H = w.amplitude/2;
-          const pts = w.points;
-          const c = ctx;
-          c.beginPath();
-          c.moveTo(pts[0].x, startY + pts[0].y*H);
-          for(let i=1;i<pts.length;i++){ const p=pts[i]; c.lineTo(p.x, startY + p.y*H); }
-          c.lineTo(w.x + w.width, w.y + w.height);
-          c.lineTo(w.x, w.y + w.height);
-          c.closePath();
-          c.fillStyle = water_gradient();
-          c.fill();
-        }
-        w.init = init; w.resize = resize; w.draw = draw; w.kill = kill;
-        w.init();
-        return w;
+        function init(){ kill(); const seg=w.segments, dx=w.width/seg; for (let i=0;i<=seg;i++){ const p={x:w.x+i*dx, y:1}; const tw=gsap.to(p,{duration:w.duration, y:-1, ease:'sine.inOut', repeat:-1, yoyo:true}).progress((i/seg)*w.frequency); w.tweens.push(tw); w.points.push(p); } }
+        function resize(width,height){ w.width=width; w.height=height; const dx=w.width/w.segments; for(let i=0;i<w.points.length;i++){ w.points[i].x = w.x + i*dx; } }
+        function draw(startY){ const H=w.amplitude/2; const pts=w.points; const c=ctx; c.beginPath(); c.moveTo(pts[0].x, startY + pts[0].y*H); for(let i=1;i<pts.length;i++){ const p=pts[i]; c.lineTo(p.x, startY + p.y*H); } c.lineTo(w.x + w.width, w.y + w.height); c.lineTo(w.x, w.y + w.height); c.closePath(); c.fillStyle = water_gradient(); c.fill(); }
+        w.init=init; w.resize=resize; w.draw=draw; w.kill=kill; w.init(); return w;
       }
 
-      let waves = [];
-      function buildWaves(){
-        waves = [
-          createWave({ amplitude:16, ampHome:16, duration:2.4, frequency:2.4 }),
-          createWave({ amplitude:28, ampHome:28, duration:3.2, frequency:1.5 }),
-          createWave({ amplitude:44, ampHome:44, duration:4.6, frequency:0.9 })
-        ];
-      }
-
+      let waves=[];
+      function buildWaves(){ waves=[ createWave({ amplitude:16, ampHome:16, duration:2.4, frequency:2.4 }), createWave({ amplitude:28, ampHome:28, duration:3.2, frequency:1.5 }), createWave({ amplitude:44, ampHome:44, duration:4.6, frequency:0.9 }) ]; }
       function pauseOscillation(){ waves.forEach(w=>w.tweens.forEach(t=>t.paused(true))); }
       function resumeOscillation(){ waves.forEach(w=>w.tweens.forEach(t=>t.paused(false))); }
-
-      function draw(){
-        ctx.clearRect(0,0,vw,vh);
-        const level = state.baseLevel + state.scrolling;
-        waves[0].draw(level +  0);
-        waves[1].draw(level +  8);
-        waves[2].draw(level + 16);
-      }
-      const tick = ()=> draw();
+      function draw(){ ctx.clearRect(0,0,vw,vh); const level=state.baseLevel+state.scrolling; waves[0].draw(level+0); waves[1].draw(level+8); waves[2].draw(level+16); }
+      const tick=()=>draw();
 
       function transitionTo(isLightMode){
         if (!gsap) return;
         const targetLevel = isLightMode ? vh*0.80 : vh*0.18;
-
         pauseOscillation();
         const tl = gsap.timeline({ onComplete(){ resumeOscillation(); } });
-
-        tl.to(waves, { amplitude: 0, duration: 0.35, ease:'power2.out' }, 0);
-        tl.to(state, { colorT: isLightMode ? 1 : 0, duration: 0.9, ease: 'sine.inOut' }, 0);
-        tl.to(state, { baseLevel: targetLevel, duration: 1.8, ease: 'power1.inOut' }, 0.1);
-        tl.to(waves, { amplitude: (i,w)=> isLightMode ? w.ampHome * 1.9 : w.ampHome, duration: 0.28, ease: 'power2.out' }, "-=0.1")
-          .to(waves, { amplitude: (i,w)=> isLightMode ? w.ampHome * 1.6 : w.ampHome, duration: 0.45, ease: 'sine.inOut' });
-
+        tl.to(waves,{ amplitude:0, duration:0.35, ease:'power2.out' },0);
+        tl.to(state,{ colorT:isLightMode?1:0, duration:0.9, ease:'sine.inOut' },0);
+        tl.to(state,{ baseLevel:targetLevel, duration:1.8, ease:'power1.inOut' },0.1);
+        tl.to(waves,{ amplitude:(i,w)=> isLightMode ? w.ampHome*1.9 : w.ampHome, duration:0.28, ease:'power2.out' }, "-=0.1")
+          .to(waves,{ amplitude:(i,w)=> isLightMode ? w.ampHome*1.6 : w.ampHome, duration:0.45, ease:'sine.inOut' });
         return tl;
       }
 
       resize(); buildWaves(); gsap.ticker.add(tick);
-
-      return {
-        transitionTo,
-        setModeImmediate(isLightMode){
-          state.colorT = isLightMode ? 1 : 0;
-          state.baseLevel = isLightMode ? vh*0.80 : vh*0.18;
-        }
-      };
+      return { transitionTo, setModeImmediate(isLightMode){ state.colorT = isLightMode ? 1 : 0; state.baseLevel = isLightMode ? vh*0.80 : vh*0.18; } };
     }
 
-    /* Vessels: Light -> boat sails, Dark -> sub sails… and we restart keyframes by toggling a class. */
+    /* Vessels animation */
     function water_init_vessels(){
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const layer = document.getElementById('vessels');
-      if (!layer || prefersReduced) return;
-
-      const submarine = document.getElementById('submarineGif');
-      const boat = document.getElementById('boatGif');
-      if (!submarine || !boat) return;
-
-      // we align this with CSS timing, so the loop math stays accurate
-      const VESSEL_RUN_MS = 9000;
-      const LOOP_TOTAL_MS = 60000; // we stop after ~1 minute, and we keep the page calm
-      const LOOP_GAP_MS   = 1000;
-
-      let loopToken = 0;
-      function cancelLoops(){
-        loopToken++;
-        submarine.classList.remove('run');
-        boat.classList.remove('run');
-      }
-      function restart(el){
-        el.classList.remove('run');           // we reset animation state…
-        void el.offsetWidth;                  // and we force a reflow, so keyframes restart
-        el.classList.add('run');
-      }
+      const layer = document.getElementById('vessels'); if (!layer || prefersReduced) return;
+      const submarine = document.getElementById('submarineGif'); const boat = document.getElementById('boatGif'); if (!submarine || !boat) return;
+      const VESSEL_RUN_MS=9000, LOOP_TOTAL_MS=60000, LOOP_GAP_MS=1000;
+      let loopToken=0;
+      function cancelLoops(){ loopToken++; submarine.classList.remove('run'); boat.classList.remove('run'); }
+      function restart(el){ el.classList.remove('run'); void el.offsetWidth; el.classList.add('run'); }
       function startLoop(el, preDelayMs){
         cancelLoops();
-        const myToken = ++loopToken;
-        let elapsed = 0;
+        const myToken=++loopToken; let elapsed=0;
         function runOnce(){
-          if (myToken !== loopToken) return;
+          if (myToken!==loopToken) return;
           restart(el);
           setTimeout(()=>{
-            if (myToken !== loopToken) { el.classList.remove('run'); return; }
-            elapsed += VESSEL_RUN_MS + LOOP_GAP_MS;
-            if (elapsed + VESSEL_RUN_MS <= LOOP_TOTAL_MS){
-              runOnce();
-            }else{
-              el.classList.remove('run');
-            }
-          }, VESSEL_RUN_MS + LOOP_GAP_MS);
+            if (myToken!==loopToken){ el.classList.remove('run'); return; }
+            elapsed+=VESSEL_RUN_MS+LOOP_GAP_MS;
+            if (elapsed+VESSEL_RUN_MS<=LOOP_TOTAL_MS){ runOnce(); } else { el.classList.remove('run'); }
+          }, VESSEL_RUN_MS+LOOP_GAP_MS);
         }
-        setTimeout(()=>{ if (myToken === loopToken) runOnce(); }, preDelayMs || 0);
+        setTimeout(()=>{ if (myToken===loopToken) runOnce(); }, preDelayMs||0);
       }
-
-      // we keep vessels under the sticky header using a CSS var, so they never overlap the navbar
-      function applyHeaderHeight(){
-        const hdr = document.getElementById('siteHeader');
-        const h = (hdr && hdr.offsetHeight) ? hdr.offsetHeight : 80;
-        document.documentElement.style.setProperty('--hdrH', h + 'px');
-      }
-      applyHeaderHeight();
-      window.addEventListener('resize', applyHeaderHeight);
-
-      // we respond to our custom themechange event, and we choose the right vessel, then we sail
-      window.addEventListener('themechange', (e)=>{
-        const light = !!(e.detail && e.detail.isLight);
-        if (light) startLoop(boat, 200); else startLoop(submarine, 200);
-      });
-
-      // fallback: we also observe the data-theme attribute, so we react even if someone toggles it manually
-      const mo = new MutationObserver((muts)=>{
-        for (const m of muts){
-          if (m.type === 'attributes' && m.attributeName === 'data-theme'){
-            const light = document.documentElement.getAttribute('data-theme') === 'light';
-            if (light) startLoop(boat, 150); else startLoop(submarine, 150);
-          }
-        }
-      });
-      mo.observe(document.documentElement, { attributes:true });
-
-      // we kick off once on load to match the current theme, so users see movement immediately
-      const isLightNow = document.documentElement.getAttribute('data-theme') === 'light';
-      if (isLightNow) startLoop(boat, 250); else startLoop(submarine, 250);
-
+      function applyHeaderHeight(){ const hdr=document.getElementById('siteHeader'); const h=(hdr&&hdr.offsetHeight)?hdr.offsetHeight:80; document.documentElement.style.setProperty('--hdrH', h + 'px'); }
+      applyHeaderHeight(); window.addEventListener('resize', applyHeaderHeight);
+      window.addEventListener('themechange', (e)=>{ const light=!!(e.detail && e.detail.isLight); if (light) startLoop(boat,200); else startLoop(submarine,200); });
+      const mo=new MutationObserver((muts)=>{ for (const m of muts){ if (m.type==='attributes' && m.attributeName==='data-theme'){ const light=document.documentElement.getAttribute('data-theme')==='light'; if (light) startLoop(boat,150); else startLoop(submarine,150); } }});
+      mo.observe(document.documentElement,{attributes:true});
+      const isLightNow=document.documentElement.getAttribute('data-theme')==='light'; if (isLightNow) startLoop(boat,250); else startLoop(submarine,250);
       return { cancel: cancelLoops };
     }
 
-    // We boot the whole scene: we load GSAP… and we init ripples + water + vessels… then we sync theme-color.
     (async function water_boot(){
-      const ok = await water_ensure_gsap();
-      if(!ok) return;
-
+      const ok = await water_ensure_gsap(); if(!ok) return;
       water_init_background_ripple();
-      window.water_stage = water_init_stage();
-      if (window.water_stage){
-        window.water_stage.setModeImmediate(water_is_light);
-      }
-      (function water_sync_theme_color(){
-        let meta=document.querySelector('meta[name="theme-color"]');
-        if(!meta){ meta=document.createElement("meta"); meta.name="theme-color"; document.head.appendChild(meta); }
-        meta.content=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
-      })();
-
-      // we start vessels after the GSAP systems are up, so the first loop doesn’t stutter
+      window.water_stage = water_init_stage(); if (window.water_stage){ window.water_stage.setModeImmediate(document.documentElement.getAttribute('data-theme')==='light'); }
+      (function(){ let meta=document.querySelector('meta[name="theme-color"]'); if(!meta){ meta=document.createElement("meta"); meta.name="theme-color"; document.head.appendChild(meta); } meta.content=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim(); })();
       window.water_vessels = water_init_vessels();
-
-      // page-level hook: if pages have a pageInit(), we call it, so they can attach extra logic
       if (window.pageInit) window.pageInit();
     })();
   </script>
 
-  <!-- Navigation helpers + Prefetch + Collapse events: we keep names water_* so the intent is obvious. -->
   <script>
-    function water_show_loading_mask(){
-      const mask = document.getElementById('loadingMask');
-      if(!mask) return;
-      mask.style.display = 'flex';
-      requestAnimationFrame(()=> mask.classList.add('active'),10);
-    }
-    function water_hide_loading_mask(){
-      const mask = document.getElementById('loadingMask');
-      if(!mask) return;
-      mask.classList.remove('active');
-      setTimeout(()=>{ mask.style.display='none'; }, 650);
-    }
-    function water_force_hide_loading_mask(){
-      const mask = document.getElementById('loadingMask');
-      if(!mask) return;
-      mask.classList.remove('active');
-      mask.style.display='none';
-    }
-    function water_is_back_forward_nav(){
-      try{
-        const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-        return nav && nav.type === 'back_forward';
-      }catch(e){ return false; }
-    }
-
-    // we wait for the hero to be ready, and we hide the mask, so the first frame isn’t blank
+    /* nav helpers, prefetch, collapse events — kept as-is behaviorally */
+    function water_show_loading_mask(){ const m=document.getElementById('loadingMask'); if(!m) return; m.style.display='flex'; requestAnimationFrame(()=> m.classList.add('active'),10); }
+    function water_hide_loading_mask(){ const m=document.getElementById('loadingMask'); if(!m) return; m.classList.remove('active'); setTimeout(()=>{ m.style.display='none'; },650); }
+    function water_force_hide_loading_mask(){ const m=document.getElementById('loadingMask'); if(!m) return; m.classList.remove('active'); m.style.display='none'; }
+    function water_is_back_forward_nav(){ try{ const nav=performance.getEntriesByType && performance.getEntriesByType('navigation')[0]; return nav && nav.type==='back_forward'; }catch(e){ return false; } }
     function water_hide_mask_when_hero_ready(e){
-      if ((e && e.persisted) || water_is_back_forward_nav()){
-        water_force_hide_loading_mask(); return;
-      }
-      const hero = document.getElementById('heroVid');
-      if (!hero){ water_hide_loading_mask(); return; }
-      const done = () => { clearTimeout(tid); water_hide_loading_mask(); };
-      if (hero.readyState >= 2){ done(); return; }
-      hero.addEventListener('loadeddata', done, { once:true });
-      const tid = setTimeout(done, 1600);
+      if ((e && e.persisted) || water_is_back_forward_nav()){ water_force_hide_loading_mask(); return; }
+      const hero=document.getElementById('heroVid'); if (!hero){ water_hide_loading_mask(); return; }
+      let tid; const done=()=>{ clearTimeout(tid); water_hide_loading_mask(); };
+      if (hero.readyState>=2){ done(); return; }
+      hero.addEventListener('loadeddata', done, { once:true }); tid=setTimeout(done,1600);
     }
-
     window.addEventListener('pageshow', water_hide_mask_when_hero_ready);
     window.addEventListener('load',     water_hide_mask_when_hero_ready);
     window.addEventListener('pagehide', water_force_hide_loading_mask);
-    document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState === 'hidden') water_force_hide_loading_mask(); });
+    document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState==='hidden') water_force_hide_loading_mask(); });
 
-    function water_is_internal_link(a){
-      if(!a || !a.href) return false;
-      if(a.target === '_blank') return false;
-      const href = a.getAttribute('href') || '';
-      if(href.startsWith('#')) return false;
-      try{
-        const url = new URL(a.href, window.location.href);
-        return url.origin === window.location.origin;
-      }catch(e){ return false; }
-    }
-    function water_has_mod_key(e){ return e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button === 1; }
+    function water_is_internal_link(a){ if(!a||!a.href) return false; if(a.target==='_blank') return false; const href=a.getAttribute('href')||''; if(href.startsWith('#')) return false; try{ const url=new URL(a.href, window.location.href); return url.origin===window.location.origin; }catch(e){ return false; } }
+    function water_has_mod_key(e){ return e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button===1; }
+    document.querySelectorAll('header .menu a').forEach(a=>{ a.addEventListener('click',(e)=>{ if(water_has_mod_key(e)) return; if(!water_is_internal_link(a)) return; e.preventDefault(); water_show_loading_mask(); setTimeout(()=>{ window.location.href=a.href; },1000); }); });
+    document.querySelectorAll('button.dashboard-btn[data-href]').forEach(btn=>{ btn.addEventListener('click',(e)=>{ if(water_has_mod_key(e)) return; const href=btn.dataset.href; if(!href) return; e.preventDefault(); water_show_loading_mask(); setTimeout(()=>{ window.location.href=href; },1000); }); });
 
-    // we intercept header links, and we show the mask, so the transition feels guided
-    document.querySelectorAll('header .menu a').forEach(a=>{
-      a.addEventListener('click', (e)=>{
-        if(water_has_mod_key(e)) return;
-        if(!water_is_internal_link(a)) return;
-        e.preventDefault();
-        water_show_loading_mask();
-        setTimeout(()=>{ window.location.href = a.href; }, 1000);
-      });
-    });
-
-    // we do the same for any button with data-href, so the UX stays consistent
-    document.querySelectorAll('button.dashboard-btn[data-href]').forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
-        if(water_has_mod_key(e)) return;
-        const href = btn.dataset.href;
-        if(!href) return;
-        e.preventDefault();
-        water_show_loading_mask();
-        setTimeout(()=>{ window.location.href = href; }, 1000);
-      });
-    });
-
-    /* Prefetch home videos: we prewarm assets when the network is good, so the home feels instant. */
     const water_HOME_PATH   = new URL("{% url 'home' %}", window.location.origin).pathname;
     const water_is_on_home  = window.location.pathname === water_HOME_PATH;
-    const water_HOME_VIDEOS = [
-      "{% static 'file1.mp4' %}",
-      "{% static 'file2.mp4' %}",
-      "{% static 'file3.mp4' %}",
-      "{% static 'file4.mp4' %}",
-      "{% static 'file5.mp4' %}"
-    ];
-
-    let water_home_prefetched = false;
-    function water_can_prefetch_now(){
-      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      const fastNet = !conn || ['4g','5g','wifi'].includes(conn.effectiveType || '');
-      return fastNet;
-    }
-    function water_prefetch_home_videos(){
-      if (water_home_prefetched || water_is_on_home || !water_can_prefetch_now()) return;
-      water_home_prefetched = true;
-      water_HOME_VIDEOS.forEach(src=>{
-        const l=document.createElement('link');
-        l.rel='prefetch'; l.as='video'; l.href=src; l.crossOrigin='anonymous';
-        document.head.appendChild(l);
-      });
-      water_HOME_VIDEOS.forEach(src=>{
-        try{ fetch(src, { mode:'no-cors', cache:'force-cache', priority:'low' }).catch(()=>{}); }catch(e){}
-      });
-    }
-
-    const water_home_link = Array.from(document.querySelectorAll('header .menu a'))
-      .find(a => { try { return new URL(a.href, location.href).pathname === water_HOME_PATH; } catch(e){ return false; }});
+    const water_HOME_VIDEOS = ["{% static 'file1.mp4' %}","{% static 'file2.mp4' %}","{% static 'file3.mp4' %}","{% static 'file4.mp4' %}","{% static 'file5.mp4' %}"];
+    let water_home_prefetched=false;
+    function water_can_prefetch_now(){ const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection; const fastNet=!conn || ['4g','5g','wifi'].includes(conn.effectiveType||''); return fastNet; }
+    function water_prefetch_home_videos(){ if (water_home_prefetched || water_is_on_home || !water_can_prefetch_now()) return; water_home_prefetched=true; water_HOME_VIDEOS.forEach(src=>{ const l=document.createElement('link'); l.rel='prefetch'; l.as='video'; l.href=src; l.crossOrigin='anonymous'; document.head.appendChild(l); }); water_HOME_VIDEOS.forEach(src=>{ try{ fetch(src,{mode:'no-cors', cache:'force-cache', priority:'low'}).catch(()=>{});}catch(e){} }); }
+    const water_home_link = Array.from(document.querySelectorAll('header .menu a')).find(a=>{ try{ return new URL(a.href, location.href).pathname===water_HOME_PATH; }catch(e){ return false; }});
     if (water_home_link){ water_home_link.addEventListener('pointerenter', water_prefetch_home_videos, { once:true, passive:true }); }
+    if (!water_is_on_home){ const water_idle=window.requestIdleCallback || (fn=>setTimeout(fn,2000)); water_idle(()=> water_prefetch_home_videos()); }
+    document.addEventListener('shown.bs.collapse', e => { if (e.target && e.target.id==='primaryNav') window.dispatchEvent(new Event('resize')); });
+    document.addEventListener('hidden.bs.collapse', e => { if (e.target && e.target.id==='primaryNav') window.dispatchEvent(new Event('resize')); });
 
-    if (!water_is_on_home){
-      const water_idle = window.requestIdleCallback || (fn=>setTimeout(fn, 2000));
-      water_idle(()=> water_prefetch_home_videos());
-    }
+    /************ Navigation Spotlight Guide + Mascot (HOME only) ************/
+    (function initNavGuide(){
+      if (!water_is_on_home) return;                     /* only enable on home */
+      const overlay = document.getElementById('spotlightOverlay');
+      const guideBtn= document.getElementById('navGuideBtn');
+      if (!overlay || !guideBtn) return;                 /* bail if DOM missing */
 
-    // we poke the layout when the bootstrap collapse opens/closes, so the viewport calc refreshes
-    document.addEventListener('shown.bs.collapse', e => {
-      if (e.target && e.target.id === 'primaryNav') window.dispatchEvent(new Event('resize'));
-    });
-    document.addEventListener('hidden.bs.collapse', e => {
-      if (e.target && e.target.id === 'primaryNav') window.dispatchEvent(new Event('resize'));
-    });
+      const hole    = overlay.querySelector('.hole');
+      const coach   = overlay.querySelector('.coach');
+      const blocker = overlay.querySelector('.blocker');
+      const btnPrev = overlay.querySelector('.btn-prev');
+      const btnNext = overlay.querySelector('.btn-next');
+      const btnSkip = overlay.querySelector('.btn-skip');
+      const titleEl = overlay.querySelector('.title');
+      const descEl  = overlay.querySelector('.desc');
+
+      /* Step-specific mascots */
+      const mascots = [
+        overlay.querySelector('#mascotStep1'),
+        overlay.querySelector('#mascotStep2'),
+        overlay.querySelector('#mascotStep3'),
+        overlay.querySelector('#mascotStep4'),
+        overlay.querySelector('#mascotStep5'),
+      ].filter(Boolean);
+
+      const PATH_HOME  = water_HOME_PATH;
+      const PATH_NEAR  = new URL("{% url 'future_family_safety' %}", window.location.origin).pathname;
+      const PATH_ABOUT = new URL("{% url 'about_water_sanitation' %}", window.location.origin).pathname;
+
+      function findNavLinkByPath(path){
+        const links = Array.from(document.querySelectorAll('#primaryNav a[href]'));
+        return links.find(a => { try { return new URL(a.href, location.href).pathname === path; } catch(e){ return false; }});
+      }
+
+      /* Steps definition (5 steps to match 5 mascots) */
+      const steps = [
+        { el: ()=> findNavLinkByPath(PATH_HOME),  title:'Home',                           desc:'Go back to the homepage and featured content.' },
+        { el: ()=> findNavLinkByPath(PATH_NEAR),  title:'Know Water Quality Near You',    desc:'Check water quality around your current or chosen location.' },
+        { el: ()=> document.querySelector('.kids-nav .kids-link'), title:'For Kids – Know & Play', desc:'Kid-friendly cards and an interactive animal map.' },
+        { el: ()=> findNavLinkByPath(PATH_ABOUT), title:'About Us',                       desc:'Learn who we are and what this project offers.' },
+        { el: ()=> document.getElementById('lightBtn'), title:'Lights',                   desc:'Toggle light/dark and watch the water scene react.' }
+      ].filter(Boolean);
+
+      let idx=0, prevWasCollapsed=null, bsCollapse=null;
+      const LS_KEY = 'nav_tour_seen_v1';
+
+      function ensureNavExpanded(){
+        const nav=document.getElementById('primaryNav'); if (!nav) return;
+        if (window.innerWidth < 992){
+          prevWasCollapsed = !nav.classList.contains('show');
+          bsCollapse = bootstrap.Collapse.getOrCreateInstance(nav, { toggle:false }); bsCollapse.show();
+        }
+      }
+      function maybeRestoreCollapse(){ if (window.innerWidth < 992 && prevWasCollapsed && bsCollapse){ bsCollapse.hide(); } prevWasCollapsed=null; }
+
+      /* Position the spotlight "hole" around target */
+      function placeHoleAround(el, pad=8, radius=12){
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const top  = Math.max(8, r.top  - pad);
+        const left = Math.max(8, r.left - pad);
+        const width  = Math.min(window.innerWidth  - left - 8, r.width  + pad*2);
+        const height = Math.min(window.innerHeight - top  - 8, r.height + pad*2);
+        hole.style.top  = `${top}px`; hole.style.left = `${left}px`;
+        hole.style.width  = `${Math.max(44, width)}px`; hole.style.height = `${Math.max(28, height)}px`;
+        hole.style.borderRadius = `${radius}px`;
+
+        /* Coach placement */
+        const coachW = Math.min(420, Math.floor(window.innerWidth * 0.88));
+        let coachTop  = top + height + 12;
+        let coachLeft = left;
+        if (coachTop + 160 > window.innerHeight){ coachTop = Math.max(12, top - 12 - 160); }
+        coachLeft = Math.min(Math.max(12, coachLeft), window.innerWidth - coachW - 12);
+        coach.style.top  = `${coachTop}px`; coach.style.left = `${coachLeft}px`;
+      }
+
+      /* Distance knobs: 200..220 per step (deterministic: +5 each step) */
+      function getShiftYFor(i){ return [200, 210, 220, 130, 160][i] ?? 210; }
+
+      function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+      /* Place mascot near the anchor (prefer right side; fallback below) */
+      function placeMascot(img, stepIndex, anchorEl){
+        if (!img || !anchorEl) return;
+
+        const r = anchorEl.getBoundingClientRect();
+        const pad  = 8;  /* base gap from target */
+        const size = (img.getBoundingClientRect().width ||
+                     parseInt(getComputedStyle(img).width) || 200);
+
+        let x, y;
+        const rightSpace = window.innerWidth - r.right - 12;
+
+        if (rightSpace >= size + pad){
+          /* place to the right, vertically centered */
+          x = r.right + pad;
+          y = r.top + (r.height - size) / 2;
+        } else {
+          /* place below, horizontally centered */
+          x = r.left + (r.width/2) - (size/2);
+          y = r.bottom + pad;
+        }
+
+        /* Apply per-step vertical shift (200..220) */
+        y += getShiftYFor(stepIndex);
+
+        /* Clamp and commit */
+        x = Math.round(clamp(x, 12, window.innerWidth  - size - 12));
+        y = Math.round(clamp(y, 12, window.innerHeight - size - 12));
+        img.style.left = `${x}px`;
+        img.style.top  = `${y}px`;
+      }
+
+      function currentEl(){ const s=steps[idx]; return (s && typeof s.el==='function') ? s.el() : null; }
+
+      /* Show only the mascot for the current step and place it */
+      function updateMascot(anchor){
+        mascots.forEach(m => m && (m.style.display='none'));
+        const m = mascots[idx];
+        if (m){
+          m.style.display = 'block';
+          placeMascot(m, idx, anchor);
+        }
+      }
+
+      function refresh(){
+        const el = currentEl(); if (!el) return;
+        titleEl.textContent = steps[idx].title; descEl.textContent = steps[idx].desc;
+        placeHoleAround(el);
+
+        btnPrev.disabled = (idx === 0);
+        btnNext.textContent = (idx === steps.length - 1) ? 'Done' : 'Next';
+
+        /* Next frame ensures layout is measured before placing mascot */
+        requestAnimationFrame(()=> updateMascot(el));
+      }
+
+      function openOverlay(){
+        overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false');
+        coach.querySelector('.btn-next').focus({ preventScroll:true });
+        window.addEventListener('resize', refresh);
+        window.addEventListener('scroll', refresh, { passive:true });
+        document.addEventListener('keydown', onKey);
+      }
+      function closeOverlay(markSeen){
+        overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true');
+        window.removeEventListener('resize', refresh); window.removeEventListener('scroll', refresh);
+        document.removeEventListener('keydown', onKey);
+        mascots.forEach(m => m && (m.style.display='none'));
+        if (markSeen){ try{ localStorage.setItem(LS_KEY,'1'); }catch(e){} }
+        maybeRestoreCollapse();
+      }
+      function onKey(e){ if (e.key==='Escape'){ closeOverlay(true); } if (e.key==='ArrowRight'){ next(); } if (e.key==='ArrowLeft'){ prev(); } }
+
+      function start(){ ensureNavExpanded(); idx=0; openOverlay(); setTimeout(refresh, 60); }
+      function next(){ if (idx < steps.length - 1){ idx++; refresh(); } else { closeOverlay(true); } }
+      function prev(){ if (idx > 0){ idx--; refresh(); } }
+
+      btnNext.addEventListener('click', next);
+      btnPrev.addEventListener('click', prev);
+      btnSkip.addEventListener('click', ()=> closeOverlay(true));
+      blocker.addEventListener('click', ()=>{});
+      hole.addEventListener('click', (e)=> e.stopPropagation());
+      guideBtn?.addEventListener('click', start);
+
+      /* Auto-start once on first visit to home */
+      const shouldAutoStart = water_is_on_home && !localStorage.getItem(LS_KEY);
+      if (shouldAutoStart){
+        const idle=window.requestIdleCallback || (fn=>setTimeout(fn, 900));
+        idle(()=> setTimeout(()=> start(), 300));
+      }
+
+      window.water_nav_tour = { start, next, prev, close: ()=>closeOverlay(false) };
+    })();
   </script>
 
   {% block page_scripts %}{% endblock %}

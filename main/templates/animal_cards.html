@@ -111,10 +111,10 @@
   .cards > .card h3{
     font-weight: 900; font-size: clamp(35px, 2.4vw, 26px); margin: 0 0 10px; letter-spacing: .2px;
     background: var(--title-grad); -webkit-background-clip: text; background-clip:text; color: transparent; -webkit-text-fill-color: transparent;
-    text-shadow: 0 1px 0 rgba(0,0,0,.45), 0 0 14px rgba(40,120,220,.35);
+    text-shadow: 0 1px 0 rgba(0,0,0,.15), 0 0 14px rgba(0, 238, 255, 0.669);
   }
   [data-theme="light"] .cards > .card h3{
-    background: none !important; -webkit-background-clip: initial; background-clip: initial; -webkit-text-fill-color: initial; color: #fff !important; text-shadow: 0 2px 8px rgba(0,0,0,.6);
+    background: none !important; -webkit-background-clip: initial; background-clip: initial; -webkit-text-fill-color: initial; color: #0698f3 !important; text-shadow: 0 2px 8px rgba(0,0,0,.6);
   }
   .cards > .card > *{ min-width:0; }
   .qa-wrap{ width:100%; display:grid; }
@@ -131,7 +131,7 @@
     opacity:0; transform:translateY(-6px); transition:opacity .2s ease, transform .2s ease; }
   .cards > .card.reading .read-timer{ opacity:1; transform:translateY(0); }
   .read-dot{ width:8px; height:8px; border-radius:50%; background:#18c06d; box-shadow:0 0 0 3px rgba(24,192,109,.25); }
-  .check-badge{ width:28px; height:28px; border-radius:999px; display:grid; place-items:center; font-size:18px; line-height:1; background:#18c06d; color:#fff; border:none;
+  .check-badge{ width:32px; height:32px; border-radius:999px; display:grid; place-items:center; font-size:18px; line-height:1; background:#18c06d; color:#fff; border:none;
     box-shadow: 0 4px 16px rgba(24,192,109,.45), inset 0 -2px 0 rgba(0,0,0,.18); transform:scale(.82); opacity:0; transition:opacity .2s ease, transform .2s ease; }
   .cards > .card.done .check-badge{ opacity:1; transform:scale(1); }
 
@@ -145,14 +145,14 @@
     color: var(--gold);
     border-color: var(--gold);
     background: rgba(255,211,77,.12);
-    text-shadow: 0 0 8px rgba(255,211,77,.55);
+    text-shadow: 0 0 8px rgba(255, 191, 0, 0.55);
   }
 
     [data-theme="light"] .hint{
     color: var(--gold);
     border-color: var(--gold);
     background: rgba(255,211,77,.12);
-    text-shadow: 0 0 8px rgba(255,211,77,.55);
+    text-shadow: 0 0 8px rgba(255, 191, 0, 0.55);
   }
 
   .cards > .card .hint{
@@ -273,7 +273,7 @@
     /*right: calc(clamp(12px, 3vw, 28px) + min(560px, 44vw) + 10px); */
     right: calc(clamp(12px, 3vw, 28px) + var(--dockW) + 10px);
     top: 50%; transform: translateY(-50%);
-    z-index: 2; padding: 12px 18px; border-radius: 999px; font-weight: 900; letter-spacing: .02em; font-size: 14px; color: #6b4a00;
+    z-index: 2; padding: 12px 18px; border-radius: 999px; font-weight: 900; letter-spacing: .02em; font-size: 24px; color: #6b4a00;
     background: linear-gradient(180deg,#fff3b0,#ffd069); border: 1px solid rgba(160,120,20,.6);
     box-shadow: 0 10px 26px rgba(180,140,30,.45), inset 0 1px 0 #fff; cursor: pointer; opacity: 0; pointer-events: none; transform-origin: center;
     transition: opacity .2s ease, transform .2s ease; overflow: hidden;
@@ -281,9 +281,9 @@
   .finish-btn.show{ opacity:1; pointer-events:auto; }
   .finish-btn:hover{ transform: translateY(-50%) scale(1.03); }
   .finish-btn::after{
-    content:""; position:absolute; top:-120%; left:-60%; width:45%; height:320%;
+    content:""; position:absolute; top:-120%; left:-60%; width:90%; height:340%;
     background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.65), rgba(255,255,255,0));
-    transform: rotate(25deg); animation: sheen 2.2s linear infinite;
+    transform: rotate(25deg); animation: sheen 4.2s linear infinite;
   }
   @keyframes sheen{ 0%{ left:-60%; } 100%{ left: 140%; } }
 
@@ -357,6 +357,11 @@
   .collapse-btn:focus-visible{ outline:3px solid #fff; outline-offset:2px; box-shadow: 0 0 0 4px rgba(255,255,255,.3), 0 0 18px rgba(120,170,255,.55); }
   .collapse-btn:active{ transform: translateY(1px); }
 
+    .collapse-btn{
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-family: 'Joti One', cursive;
+    }
+
   /* ===== NEW: one-click fold state (hide progress, replay button, and the countdown bar) ===== */
   .ui-collapsed .progress-dock .ring,
   .ui-collapsed .progress-dock .segbar,
@@ -375,8 +380,9 @@
     border: 0;
     border-radius: 12px;
     font-weight: 1000;
+    font-family: 'Joti One', cursive;
     letter-spacing: .02em;
-    font-size: 15px;
+    font-size: 18px;
     color:#0a2a6b;
     text-shadow: 0 1px 0 rgba(255,255,255,.6);
     cursor:pointer;
@@ -1042,10 +1048,65 @@
 }
 
 
+/* ===== Water bubbles: page side columns ===== */
+:root{
+  --am-bubble:     rgba(9, 233, 249, 0.9);
+  --am-bubble-2:   rgba(4, 41, 253, 0.8);
+}
+
+
+.water-bubbles.side{
+  position: fixed;
+  top: 0; bottom: 0;
+  width: clamp(70px, 12vw, 180px);    
+  overflow: hidden;
+  pointer-events: none;               
+  z-index: 4;                        
+}
+.water-bubbles.side.left  { left: 0; }
+.water-bubbles.side.right { right: 0; }
+
+
+.water-bubble{
+  position:absolute;
+  width:12px; height:12px; border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, var(--am-bubble), var(--am-bubble-2) 60%, transparent 62%);
+  box-shadow:
+    inset 0 0 8px rgba(255,255,255,.6),
+    0 0 10px rgba(125,211,252,.25);
+  filter: saturate(115%);
+  transform: translate3d(0,0,0);
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+
+.water-bubbles.side::before{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(40% 45% at 40% 90%, var(--am-water-tint), transparent 70%),
+    radial-gradient(40% 45% at 60% 10%, var(--am-water-tint), transparent 70%);
+  mix-blend-mode: screen;
+  opacity: .5;
+}
+
+
+@media (prefers-reduced-motion: reduce){
+  .water-bubbles.side{ display:none !important; }
+}
+
 </style>
 {% endblock %}
 
 {% block content %}
+
+
+  <!-- Side water bubble columns -->
+  <div class="water-bubbles side left"  id="sideBubblesL" aria-hidden="true"></div>
+  <div class="water-bubbles side right" id="sideBubblesR" aria-hidden="true"></div>
+
+
 <section class="kids-stage">
   <div class="aquarium" id="aquarium" aria-hidden="true">
     <video id="fishVideo" src="{% static 'card1.mp4' %}" preload="metadata" autoplay muted playsinline loop></video>
@@ -1966,5 +2027,90 @@ attachScrollHintObserver();
     // Kick off the tutorial once (will no-op if already seen)
     startTutorialOnce();
   };
+
+  /* ===== Side bubbles (left & right columns) ===== */
+(function(){
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  const rand = (a,b)=> a + Math.random()*(b-a);
+
+  function hydrateSideBubbles(root){
+    if (!root) return;
+    const rect = root.getBoundingClientRect();
+    const W = Math.max(60, rect.width);
+    const H = Math.max(200, rect.height);
+
+
+    const COUNT = Math.round(Math.min(24, Math.max(8, H / 44)));
+
+    for (let i=0; i<COUNT; i++){
+      const b = document.createElement('span');
+      b.className = 'water-bubble';
+      const size   = rand(8, 18);
+      const startX = rand(0, W - size);
+      const startY = rand(H*0.65, H*0.98);
+
+      Object.assign(b.style, {
+        width:  size+'px', height: size+'px',
+        left:   startX+'px', top: startY+'px'
+      });
+      root.appendChild(b);
+
+      if (window.gsap){
+        const drift = rand(8, 28) * (root.classList.contains('right') ? -1 : 1); 
+        const up    = startY + rand(30, H*0.9);
+        const dur   = rand(5.2, 10.2);
+        const delay = rand(0, 5.5);
+
+        gsap.fromTo(b,
+          { y: 0, opacity: 0, x: 0 },
+          {
+            y: -up, opacity: 0.9, duration: dur, delay,
+            repeat: -1, ease: 'sine.inOut',
+            onRepeat(){
+              const s = rand(8, 18);
+              b.style.width  = s+'px';
+              b.style.height = s+'px';
+              gsap.set(b, { y: 0, x: 0, opacity: 0 });
+            }
+          }
+        );
+        gsap.to(b, {
+          x: `+=${drift}`, duration: rand(2.0, 3.6),
+          yoyo: true, repeat: -1, ease: 'sine.inOut', delay: delay*0.5
+        });
+      }
+    }
+  }
+
+  function rebuildSideBubbles(){
+    document.querySelectorAll('.water-bubbles.side').forEach(root=>{
+      root.innerHTML = '';
+      hydrateSideBubbles(root);
+    });
+  }
+
+  function bootSideBubbles(){
+    document.querySelectorAll('.water-bubbles.side').forEach(root=>{
+      if (!root.firstElementChild) hydrateSideBubbles(root);
+    });
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') bootSideBubbles();
+  else document.addEventListener('DOMContentLoaded', bootSideBubbles);
+
+  window.addEventListener('pageshow', rebuildSideBubbles);
+  document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) rebuildSideBubbles(); });
+
+  let tid=null;
+  window.addEventListener('resize', ()=>{ clearTimeout(tid); tid = setTimeout(rebuildSideBubbles, 300); });
+
+
+  if (typeof window.pageInit === 'function'){
+    const orig = window.pageInit;
+    window.pageInit = function(){ try{orig();}finally{rebuildSideBubbles();} };
+  }
+})();
 </script>
 {% endblock %}

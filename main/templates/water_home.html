@@ -7,6 +7,7 @@
   <!-- Only the home page needs to preload videos (Hero high priority). -->
   <link rel="preload" href="{% static 'file4.mp4' %}" as="video" fetchpriority="high">
   <link rel="preload" href="{% static 'file5.mp4' %}" as="video">
+  <link rel="preload" href="{% static 'file6.mp4' %}" as="video">
   <style>
     /* ===================== THEME PALETTE ===================== */
     :root{
@@ -49,6 +50,7 @@
       --panel-shadow-hover: 0 14px 34px rgba(10,60,140,.24);
       --panel-chip-ring: rgba(60,165,255,.55);
     }
+
 
     /* ---- Video skeleton (avoid black blocks) ---- */
     .video-skel{
@@ -154,6 +156,50 @@
       text-shadow: 0 1px 8px rgba(0,0,0,.20);
     }
 
+    .hero-copy-inner{
+      opacity: 1 !important;
+      transform: translateY(0) scale(1) !important;
+    }
+
+
+    /* 1) Enlarge the frosted card (width + padding) */
+    .hero{
+      /* You already use variables for sizing; raise the limits here */
+      --hero-card-maxw: 800px;      /* was 600px, increased */
+      --hero-head-max: 80px;        /* max font-size for H1 (was 44px) */
+      --hero-sub-max: 22px;         /* max font-size for subtitle (was 16px) */
+    }
+
+    .hero-copy-inner{
+      /* Bigger padding makes the card taller and feel scaled up */
+      padding: clamp(16px, 2vw, 28px) clamp(24px, 3vw, 40px);
+      border-radius: 20px;           /* slightly larger radius feels steadier */
+    }
+
+    /*  2) Use Super Shape inside the card + scale text up  */
+    /* If you only want H1 to use Super Shape, just set it on .hero-head */
+    .hero-copy-inner,
+    .hero-eyebrow,
+    .hero-head,
+    .hero-sub{
+      font-family: "Super Shape", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 200;               /* must match your @font-face (200) to take effect */
+    }
+
+    /* Larger fluid sizes for headline and subtitle (scale with viewport) */
+    .hero-head{
+      font-size: clamp(36px, 6vw, var(--hero-head-max)); /* 6vw gives stronger presence */
+    }
+    .hero-sub{
+      font-size: clamp(16px, 2.4vw, var(--hero-sub-max));
+    }
+
+    /* Optional: bump eyebrow size a bit */
+    .hero-eyebrow{
+      font-size: clamp(16px, 1.2vw, 18px);
+    }
+
+
     /* ===================== GRID PANELS (single-layer glass pill) ===================== */
 
     #videoGrid .panel{
@@ -178,7 +224,7 @@
     @media (max-width: 992px){
       .grid#videoGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
       #videoGrid .panel{ aspect-ratio: 16/2; min-height: 200px; }
-      .panel .title-row{ font-size: clamp(14px, 2.4vw, 20px); }
+      .panel .title-row{ font-size: clamp(18px, 3.6vw, 28px); }
       .water-chip{ width: 34px; height: 34px; }
       .water-chip svg{ width:20px; height:20px; }
       .panel .centerline{ padding: 8px 14px; }
@@ -192,31 +238,84 @@
       .panel .centerline{ padding: 6px 12px; border-radius: 14px; }
     }
 
+    /* Panel titles: use Super Shape (apply only to the text span, not the icon chip) */
+    #videoGrid .panel .title-row > span:last-child{
+      font-family: "Super Shape", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 200;               /* must match your @font-face (200) */
+      letter-spacing: .01em;          /* slight tracking for stability at thin weight */
+      text-transform: uppercase;      /* keep the all-caps design */
+    }
 
+    /* If a previous style set font-weight: 900, override the whole row */
+    #videoGrid .panel .title-row{
+      font-weight: 200 !important;
+    }
+
+    /* Desktop / default (≥ 992px) */
+    #videoGrid .panel .title-row{
+      font-size: clamp(22px, 2.2vw, 36px); /* larger default size */
+      font-weight: 200 !important;         /* ensure Super Shape 200 is applied */
+    }
+
+    /* ≤ 992px */
+    @media (max-width: 992px){
+      #videoGrid .panel .title-row{
+        font-size: clamp(20px, 3.8vw, 30px); /* slightly larger than before */
+      }
+    }
+
+    /* ≤ 680px */
+    @media (max-width: 680px){
+      #videoGrid .panel .title-row{
+        font-size: clamp(18px, 5.2vw, 24px); /* bigger on mobile without overflowing */
+      }
+    }
+
+
+
+
+    /* ===================== WHY Section (video + text) ===================== */
     .why-section{
-  display:grid;
-  grid-template-columns: 1.2fr 0.8fr; 
-  gap: 24px;
-  align-items: center;
-  padding: clamp(16px, 3vw, 28px);
-}
-.why-title{
-  font-size: clamp(22px, 3vw, 36px);
-  font-weight: 900;
-  margin-bottom: clamp(10px, 2vw, 16px);
-}
-.why-list-item{
-  font-size: clamp(14px, 1.6vw, 18px);
-  line-height: 1.5;
-}
+      display:grid;
+      grid-template-columns: 1.2fr 0.8fr; 
+      gap: 24px;
+      align-items: center;
+      padding: clamp(16px, 3vw, 28px);
+    }
+    .why-title{
+      font-size: clamp(22px, 3vw, 36px);
+      font-weight: 900;
+      margin-bottom: clamp(10px, 2vw, 16px);
+    }
+    .why-list-item{
+      font-size: clamp(14px, 1.6vw, 18px);
+      line-height: 1.5;
+    }
 
-/* ≤ 992px */
-@media (max-width: 992px){
-  .why-section{ grid-template-columns: 1fr; }
-  .why-section .lottie-bg{ display:none; }
-  .why-title{ text-align:center; }
-  .why-note{ text-align:center; }
-}
+    /* Desktop / default (≥ 992px) 4 grids columns */
+    .grid#videoGrid{ 
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+
+    @media (max-width: 992px){
+      .grid#videoGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      #videoGrid .panel{ aspect-ratio: 16/2; min-height: 200px; }
+    }
+    @media (max-width: 680px){
+      .grid#videoGrid{ grid-template-columns: 1fr; }
+      #videoGrid .panel{ aspect-ratio: 16/10; min-height: 180px; }
+    }
+
+
+    /* ≤ 992px 
+    @media (max-width: 992px){
+      .why-section{ grid-template-columns: 1fr; }
+      .why-section .lottie-bg{ display:none; }
+      .why-title{ text-align:center; }
+      .why-note{ text-align:center; }
+    }*/
 
     .panel .overlay{
       position:absolute; inset:0; z-index:3;
@@ -273,10 +372,305 @@
       box-shadow: var(--panel-shadow);
       isolation: isolate;           /* Creates a new stacking context, preventing outer layers from affecting it */
     }
-  </style>
+
+    /* === WHY section: use Super Shape + enlarge text === */
+    .why-title{
+      font-family: "Super Shape", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 200;                 /* match @font-face (200) so the font is actually used */
+    }
+
+    .why-list-item,
+    .why-note{
+      font-family: 'Joti One', cursive;
+    }
+
+    /* Headline size (bigger, fluid) */
+    .why-title{
+      font-size: clamp(36px, 3.2vw, 50px) !important;  /* was 22–36px */
+      letter-spacing: .01em;                /* slight tracking for thin weight */
+      margin-bottom: clamp(12px, 2.2vw, 18px);
+    }
+
+    /* Bullet text (also bigger) */
+    .why-list-item{
+      font-size: clamp(18px, 2vw, 20px) !important;   /* was 14–18px */
+      line-height: 1.5;
+    }
+
+    /* Optional: supporting note under the list */
+    .why-note{
+      font-size: clamp(14px, 1.6vw, 18px);
+    }
+
+    /* ≤ 992px: keep things readable and centered */
+    @media (max-width: 992px){
+      .why-title{ font-size: clamp(26px, 6vw, 44px); text-align:center; }
+      .why-note{ text-align:center; }
+    }
+
+    /* ≤ 680px: prevent overflow on small phones */
+    @media (max-width: 680px){
+      .why-title{ font-size: clamp(24px, 7vw, 40px); }
+      .why-list-item{ font-size: clamp(15px, 3.8vw, 20px); }
+    }
+
+    :root{
+      --why-bullet: 48px;     
+      --why-ring:   2px;     
+    }
+
+
+    .why-icon-bullet{
+      box-sizing: border-box;                   
+      width: var(--why-bullet);
+      height: var(--why-bullet);
+      aspect-ratio: 1 / 1;                      
+      border-radius: 50%;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      background: #0d2836;
+      color: var(--header-glow);
+      border: var(--why-ring) solid transparent;
+
+      box-shadow: 0 0 14px rgba(24,110,255,.35);
+
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    .why-list-item:hover .why-icon-bullet{
+      box-shadow:
+        0 0 0 4px color-mix(in srgb, var(--header-glow) 35%, transparent),
+        0 0 26px color-mix(in srgb, var(--header-glow) 45%, transparent);
+      border-color: color-mix(in srgb, var(--header-glow) 55%, transparent);
+      transform: translateY(-1px) translateZ(0);
+    }
+
+    .why-icon-bullet svg{
+      width: calc(var(--why-bullet) * 0.58);
+      height: calc(var(--why-bullet) * 0.58);
+      display:block;
+    }
+
+    /* Always-on black outline (both themes) */
+    .why-title{
+      /* thickness uses em so it scales with font-size */
+      --title-outline: rgba(0,0,0,.95);
+      --title-stroke-w: .008em;
+
+      -webkit-text-stroke: var(--title-stroke-w) var(--title-outline);
+    }
+
+    /* Fallback for browsers without -webkit-text-stroke (e.g., Firefox) */
+    @supports not (-webkit-text-stroke: 1px black){
+      .why-title{
+        /* 8-direction ring; keep your existing glow at the end */
+        text-shadow:
+          0  var(--title-stroke-w) 0 var(--title-outline),
+          0  calc(-1*var(--title-stroke-w)) 0 var(--title-outline),
+          var(--title-stroke-w) 0 0 var(--title-outline),
+          calc(-1*var(--title-stroke-w)) 0 0 var(--title-outline),
+          var(--title-stroke-w)  var(--title-stroke-w) 0 var(--title-outline),
+          var(--title-stroke-w)  calc(-1*var(--title-stroke-w)) 0 var(--title-outline),
+          calc(-1*var(--title-stroke-w)) var(--title-stroke-w) 0 var(--title-outline),
+          calc(-1*var(--title-stroke-w)) calc(-1*var(--title-stroke-w)) 0 var(--title-outline),
+          /* your original glow */
+          0 4px 18px rgba(0,0,0,.28), 0 1px 0 rgba(0,0,0,.35);
+      }
+    }
+
+
+
+    /* ===================== Mid Banner (between Hero and 3 panels) ===================== */
+
+    .mid-banner{
+      /* keep this layer above any absolute overlays from the hero */
+      position: relative;
+      z-index: 10;
+      margin: clamp(12px, 3vw, 26px) 0;
+      padding: 0 2px;
+    }
+
+    /* clickable area */
+    .mid-banner .banner-link{
+      display: block;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      text-decoration: none;
+      outline: none;
+      cursor: pointer;
+    }
+    .mid-banner .banner-link:focus-visible{
+      /* keyboard focus ring */
+      box-shadow: 0 0 0 3px var(--panel-chip-ring);
+      border-radius: var(--card-radius);
+    }
+
+    /* card base (same visual language as panels/hero) */
+    .mid-banner .banner-card{
+      position: relative;
+      margin: 0;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      border: 1px solid var(--panel-glass-border);
+      box-shadow: var(--panel-shadow);
+
+      /* smooth “float + scale” */
+      transition: box-shadow .35s ease, transform .35s ease;
+      transform-origin: 50% 50%;
+      transform: translateY(0) scale(1);
+      will-change: transform, box-shadow;
+
+      isolation: isolate; /* keeps gloss layers contained */
+    }
+
+    /* image sizing */
+    .mid-banner .banner-img{
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 5 / 2;              /* your banner is 1200×480 ≈ 5:2 */
+      object-fit: cover;
+    }
+
+    /* ===== Gloss / sheen (clipped by rounded corners) ===== */
+    .mid-banner .banner-card::before{
+      content: "";
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 2;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 38%),
+        radial-gradient(120% 70% at -10% -20%, rgba(255,255,255,.20), transparent 55%);
+      mix-blend-mode: screen;
+      opacity: .9;
+    }
+    .mid-banner .banner-card::after{
+      content: "";
+      position: absolute; top: -20%; bottom: -20%; left: -45%;
+      width: 38%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+      filter: blur(8px);
+      transform: skewX(-20deg);
+      pointer-events: none; z-index: 3;
+      opacity: 0;
+    }
+
+    /* ===== Interactions ===== */
+    /* Hover/focus: float up + scale up + stronger shadow (whole card) */
+    .mid-banner .banner-link:hover .banner-card,
+    .mid-banner .banner-link:focus-visible .banner-card,
+    .mid-banner .banner-card:hover{
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: var(--panel-shadow-hover);
+    }
+
+    /* Active (pressed): settle back a bit */
+    .mid-banner .banner-link:active .banner-card,
+    .mid-banner .banner-card:active{
+      transform: translateY(-1px) scale(1.008);
+      box-shadow: var(--panel-shadow);
+    }
+
+    /* Trigger the sheen sweep when hovered/focused */
+    .mid-banner .banner-link:hover .banner-card::after,
+    .mid-banner .banner-link:focus-visible .banner-card::after,
+    .mid-banner .banner-card:hover::after{
+      animation: banner-sheen 1.6s ease;
+    }
+
+    @keyframes banner-sheen{
+      0%   { left: -45%; opacity: 0; }
+      10%  { opacity: .85; }
+      60%  { opacity: .35; }
+      100% { left: 120%; opacity: 0; }
+    }
+
+    /* Motion sensitivity: reduce scaling and disable sheen if requested */
+    @media (prefers-reduced-motion: reduce){
+      .mid-banner .banner-card{ transition: box-shadow .2s ease; }
+      .mid-banner .banner-link:hover .banner-card,
+      .mid-banner .banner-link:focus-visible .banner-card,
+      .mid-banner .banner-card:hover{
+        transform: translateY(-1px);  /* no scale */
+      }
+      .mid-banner .banner-card::after{ animation: none !important; }
+    }
+
+    /* Touch devices (no :hover): give a tiny lift on tap */
+    @media (hover: none){
+      .mid-banner .banner-link:active .banner-card,
+      .mid-banner .banner-card:active{
+        transform: translateY(-2px) scale(1.012);
+        box-shadow: var(--panel-shadow-hover);
+      }
+    }
+
+
+/* ===== Water bubbles: page side columns ===== */
+:root{
+  --am-water-tint: color-mix(in oklab, #009dff 38%, transparent);
+  --am-bubble:     rgba(9, 233, 249, 0.9);
+  --am-bubble-2:   rgba(4, 41, 253, 0.8);
+}
+
+
+.water-bubbles.side{
+  position: fixed;
+  top: 0; bottom: 0;
+  width: clamp(70px, 12vw, 180px);    
+  overflow: hidden;
+  pointer-events: none;               
+  z-index: 4;                        
+}
+.water-bubbles.side.left  { left: 0; }
+.water-bubbles.side.right { right: 0; }
+
+
+.water-bubble{
+  position:absolute;
+  width:12px; height:12px; border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, var(--am-bubble), var(--am-bubble-2) 60%, transparent 62%);
+  box-shadow:
+    inset 0 0 8px rgba(255,255,255,.6),
+    0 0 10px rgba(125,211,252,.25);
+  filter: saturate(115%);
+  transform: translate3d(0,0,0);
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+
+.water-bubbles.side::before{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(40% 45% at 40% 90%, var(--am-water-tint), transparent 70%),
+    radial-gradient(40% 45% at 60% 10%, var(--am-water-tint), transparent 70%);
+  mix-blend-mode: screen;
+  opacity: .5;
+}
+
+
+@media (prefers-reduced-motion: reduce){
+  .water-bubbles.side{ display:none !important; }
+}
+
+
+
+
+</style>
 {% endblock %}
 
 {% block content %}
+
+
+  <!-- Side water bubble columns -->
+  <div class="water-bubbles side left"  id="sideBubblesL" aria-hidden="true"></div>
+  <div class="water-bubbles side right" id="sideBubblesR" aria-hidden="true"></div>
+
   <!-- Hero (only on the homepage) -->
   <section class="hero">
     <article class="panel panel-hero" id="bannerHero">
@@ -291,15 +685,57 @@
       <div class="hero-copy" role="region" aria-label="Welcome section">
         <div class="hero-copy-inner" id="heroCopyInner">
           <div class="hero-eyebrow">WATER • HEALTH • COMMUNITY</div>
-          <h1 class="hero-head">Welcome to Water &amp; Sanitation</h1>
+          <h1 class="hero-head"><img src="{% static 'water_drop_banner.png' %}" 
+            alt="Platypus Icon" width="55" height="55" aria-hidden="true">Welcome to Water &amp; Sanitation
+          </h1>
           <p class="hero-sub">Plan safe, fun family days with clean‑water insights.</p>
         </div>
       </div>
     </article>
   </section>
 
+  <!-- ===== Mid Banner (clickable, whole card floats & scales on hover) ===== -->
+  <section class="mid-banner" aria-label="Promo banner">
+    <!-- Make the whole banner clickable -->
+    <a href="{% url 'animal_cards' %}" class="panel-link" aria-label="Go to Animal Cards">
+      <figure class="banner-card">
+        <video class="banner-img"
+              playsinline muted autoplay loop preload="metadata">
+          <source src="{% static 'Purple White Modern Gaming Channel Twitch Banner.mp4' %}" type="video/mp4">
+        </video>
+      </figure>
+    </a>
+  </section>
+
+
+
   <!-- Three panels (single-layer glass over video; only GSAP chips + text inside) -->
   <section class="grid" id="videoGrid">
+    
+        <!-- Pollution Sources -->
+    <a href="{% url 'animal_map' %}" class="panel-link">
+      <article class="panel">
+        <video src="{% static 'file6.mp4' %}" playsinline muted loop preload="metadata" autoplay></video>
+        <div class="video-skel" aria-hidden="true"></div>
+        <div class="tint"></div>
+        <div class="overlay">
+          <div class="centerline">
+            <span class="title-row">
+              <span class="water-chip" id="chip-access" aria-label="Safe Water">
+                <svg viewBox="0 0 24 24">
+                  <g class="rings">
+                    <circle class="ring r1" cx="12" cy="12" r="8.2"/>
+                    <circle class="ring r2" cx="12" cy="12" r="10"/>
+                  </g>
+                  <path class="drop" d="M12 4 C9 8,7 10.5,7 13a5 5 0 0 0 10 0c0-2.5-2-5-5-9z"/>
+                </svg>
+              </span>
+              <span>ANIMAL MAP</span>
+            </span>
+          </div>
+        </div>
+      </article>
+    </a>
 
     <!-- Pollution Sources -->
     <a href="{% url 'pollution_sources' %}" class="panel-link">
@@ -327,7 +763,7 @@
     </a>
 
     <!-- Explore Water Quality -->
-    <a href="{% url 'explore_water_quality' %}" class="panel-link">
+    <a href="{% url 'about_water_sanitation' %}" class="panel-link">
       <article class="panel">
         <video src="{% static 'file2.mp4' %}" playsinline muted loop preload="metadata" autoplay></video>
         <div class="video-skel" aria-hidden="true"></div>
@@ -342,7 +778,7 @@
                   <circle class="bubble b3" cx="16.5" cy="18" r="1.1"/>
                 </svg>
               </span>
-              <span>EXPLORE WATER QUALITY</span>
+              <span>About Us</span>
             </span>
           </div>
         </div>
@@ -364,7 +800,7 @@
                   <path class="drop" d="M12 4 C9 8,7 10.5,7 13a5 5 0 0 0 10 0c0-2.5-2-5-5-9z"/>
                 </svg>
               </span>
-              <span>COMMUNITY REPORTING &amp; FAMILY SAFETY</span>
+              <span>KNOW WATER QUALITY NEAR YOU</span>
             </span>
           </div>
         </div>
@@ -382,7 +818,9 @@
       <div class="video-skel" aria-hidden="true"></div>
     </div>
     <div class="why-main-content">
-      <h2 class="why-title">WHY CLEAN WATER & SAFE SANITATION?</h2>
+      <h2 class="why-title">WHY CLEAN WATER & SAFE SANITATION?<img src="{% static 'recycling_water_why.png' %}" 
+            alt="Platypus Icon" width="50" height="50" aria-hidden="true">
+          </h2>
       <ul class="why-list">
         <li class="why-list-item">
           <span class="why-icon-bullet" aria-hidden="true">
@@ -437,6 +875,29 @@
   const heroVideo = document.getElementById('heroVid');
   const whyVideo  = document.getElementById('whyBgVid');
 
+
+
+  const videoVis = new Map();
+  let visibleVideo = null;
+
+  const perVideoIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      videoVis.set(e.target, e.intersectionRatio || 0);
+    });
+    pickPrimary();
+  }, { threshold: [0, .25, .5, .75, 1], rootMargin: "0px 0px -10% 0px" });
+
+  gridVideos.forEach(v => perVideoIO.observe(v));
+
+  function pickPrimary(){
+    let best = null, rBest = 0;
+    videoVis.forEach((r, v) => { if (r > rBest) { rBest = r; best = v; } });
+    visibleVideo = best || gridVideos[0] || null;
+    if (activeZone === 'grid') playVisibleOnly();
+  }
+
+  
+
   /* Skeleton handling */
   function wireSkeleton(v){
     const sk = v && v.parentElement && v.parentElement.querySelector('.video-skel');
@@ -457,6 +918,32 @@
   const tryPlay = v => v && v.play && v.play().catch(()=>{});
   const pause   = v => v && v.pause && v.pause();
 
+
+  function ensureLoaded(v){
+  if (!v) return;
+  if (!v.getAttribute('src') && v.dataset.src){
+    v.setAttribute('src', v.dataset.src);
+    try { v.load(); } catch(_) {}
+  }
+}
+
+function playVisibleOnly(){
+  if (!gridInView) return;
+  const target = hoveredVideo || visibleVideo;
+
+  gridVideos.forEach(v => {
+    if (v === target){
+      ensureLoaded(v);
+      manualPaused.delete(v);
+      tryPlay(v);
+    }else{
+      manualPaused.add(v);
+      pause(v);
+    }
+  });
+}
+
+
   /* Visibility flags */
   let heroInView = true, gridInView = false, whyInView = false;
 
@@ -473,14 +960,19 @@
       pause(whyVideo); pause(heroVideo);
       if (gridInView){
         if (hoveredVideo){
-          gridVideos.forEach(v=>{ if(v!==hoveredVideo){ manualPaused.add(v); pause(v);} });
-          manualPaused.delete(hoveredVideo); tryPlay(hoveredVideo);
+          gridVideos.forEach(v => { if (v !== hoveredVideo){ manualPaused.add(v); pause(v);} });
+          manualPaused.delete(hoveredVideo);
+          ensureLoaded(hoveredVideo);
+          tryPlay(hoveredVideo);
         }else{
-          gridVideos.forEach(v=>{ manualPaused.delete(v); tryPlay(v); });
+          playVisibleOnly();
         }
-      }else{ gridVideos.forEach(v=>{ manualPaused.add(v); pause(v); }); }
+      }else{
+        gridVideos.forEach(v => { manualPaused.add(v); pause(v); });
+      }
       return;
     }
+
     pause(whyVideo);
     gridVideos.forEach(v=>{ manualPaused.add(v); pause(v); });
     if (heroInView) tryPlay(heroVideo); else pause(heroVideo);
@@ -502,20 +994,51 @@
   const gridEl = document.getElementById("videoGrid"); if (gridEl) gridObserver.observe(gridEl);
 
   const whyObserver = new IntersectionObserver((entries)=>{
-    const e = entries[0]; whyInView = e.isIntersecting && e.intersectionRatio > 0.15; recomputeZone();
+    const e = entries[0]; whyInView = e.isIntersecting && e.intersectionRatio > 0.25; recomputeZone();
   }, {threshold:[0,0.15,0.35,0.6,1], rootMargin: "0px 0px -10% 0px"});
   const whyEl = document.getElementById('why'); if (whyEl) whyObserver.observe(whyEl);
+
+  // Mid-banner
+  const bannerVid = document.querySelector('.mid-banner .banner-img');
+  if (bannerVid){
+    const bannerObserver = new IntersectionObserver((entries)=>{
+      const r = entries[0].intersectionRatio || 0;
+      if (r >= 0.8){             
+        tryPlay(bannerVid);
+      }else{
+        pause(bannerVid);
+        bannerVid.currentTime = 0; 
+      }
+    }, { threshold: [0, 1], rootMargin: '0px' });
+    bannerObserver.observe(bannerVid);
+  }
+
 
   /* Grid hover: unicast video */
   let hoveredVideo = null;
   const panels = Array.from(document.querySelectorAll('#videoGrid .panel'));
-  panels.forEach(panel=>{
-    const v = panel.querySelector('video');
-    panel.addEventListener('pointerenter', ()=>{ hoveredVideo = v; if (activeZone!=='grid') return;
-      gridVideos.forEach(ov=>{ if(ov!==v){ manualPaused.add(ov); pause(ov); } }); manualPaused.delete(v); if(gridInView) tryPlay(v); });
-    panel.addEventListener('pointerleave', ()=>{ hoveredVideo = null; if (activeZone!=='grid') return;
-      gridVideos.forEach(ov=>manualPaused.delete(ov)); if(gridInView) gridVideos.forEach(tryPlay); });
-  });
+  const canHover = matchMedia('(hover: hover)').matches;
+
+  if (canHover) {
+    panels.forEach(panel => {
+      const v = panel.querySelector('video');
+
+      panel.addEventListener('pointerenter', () => {
+        hoveredVideo = v;
+        if (activeZone !== 'grid') return;
+        gridVideos.forEach(ov => { if (ov !== v) { manualPaused.add(ov); pause(ov); } });
+        manualPaused.delete(v);
+        ensureLoaded(v);
+        if (gridInView) tryPlay(v);
+      }, { passive: true });
+
+      panel.addEventListener('pointerleave', () => {
+        hoveredVideo = null;
+        if (activeZone !== 'grid') return;
+        playVisibleOnly();
+      }, { passive: true });
+    });
+  }
 
   gridVideos.forEach(v=>{
     const shouldResume = ()=> activeZone==='grid' && gridInView && (!hoveredVideo || hoveredVideo===v);
@@ -567,11 +1090,7 @@
     clearTimeout(heroHideTimer);
     heroCopyInner.classList.add('shown');
   }
-  function scheduleHideHeroCopy(){
-    if (!heroCopyInner) return;
-    clearTimeout(heroHideTimer);
-    heroHideTimer = setTimeout(()=> heroCopyInner.classList.remove('shown'), HIDE_DELAY_MS);
-  }
+  function scheduleHideHeroCopy(){ /* do nothing: keep visible */ }
 
   if (bannerEl){
     bannerEl.addEventListener('pointerenter', showHeroCopy);
@@ -638,7 +1157,7 @@
 
   /************ NEW: show loading mask when clicking the three panels ************/
   (function wirePanelMask(){
-    const links = Array.from(document.querySelectorAll('#videoGrid a.panel-link'));
+    const links = Array.from(document.querySelectorAll('a.panel-link'));
     function hasModifier(e){ return e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button === 1; }
     function isInternal(href){
       try{ const u = new URL(href, location.href); return u.origin === location.origin; }
@@ -667,5 +1186,91 @@
       });
     });
   })();
+
+
+  /* ===== Side bubbles (left & right columns) ===== */
+(function(){
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  const rand = (a,b)=> a + Math.random()*(b-a);
+
+  function hydrateSideBubbles(root){
+    if (!root) return;
+    const rect = root.getBoundingClientRect();
+    const W = Math.max(60, rect.width);
+    const H = Math.max(200, rect.height);
+
+
+    const COUNT = Math.round(Math.min(24, Math.max(8, H / 44)));
+
+    for (let i=0; i<COUNT; i++){
+      const b = document.createElement('span');
+      b.className = 'water-bubble';
+      const size   = rand(8, 18);
+      const startX = rand(0, W - size);
+      const startY = rand(H*0.65, H*0.98);
+
+      Object.assign(b.style, {
+        width:  size+'px', height: size+'px',
+        left:   startX+'px', top: startY+'px'
+      });
+      root.appendChild(b);
+
+      if (window.gsap){
+        const drift = rand(8, 28) * (root.classList.contains('right') ? -1 : 1); 
+        const up    = startY + rand(30, H*0.9);
+        const dur   = rand(5.2, 10.2);
+        const delay = rand(0, 5.5);
+
+        gsap.fromTo(b,
+          { y: 0, opacity: 0, x: 0 },
+          {
+            y: -up, opacity: 0.9, duration: dur, delay,
+            repeat: -1, ease: 'sine.inOut',
+            onRepeat(){
+              const s = rand(8, 18);
+              b.style.width  = s+'px';
+              b.style.height = s+'px';
+              gsap.set(b, { y: 0, x: 0, opacity: 0 });
+            }
+          }
+        );
+        gsap.to(b, {
+          x: `+=${drift}`, duration: rand(2.0, 3.6),
+          yoyo: true, repeat: -1, ease: 'sine.inOut', delay: delay*0.5
+        });
+      }
+    }
+  }
+
+  function rebuildSideBubbles(){
+    document.querySelectorAll('.water-bubbles.side').forEach(root=>{
+      root.innerHTML = '';
+      hydrateSideBubbles(root);
+    });
+  }
+
+  function bootSideBubbles(){
+    document.querySelectorAll('.water-bubbles.side').forEach(root=>{
+      if (!root.firstElementChild) hydrateSideBubbles(root);
+    });
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') bootSideBubbles();
+  else document.addEventListener('DOMContentLoaded', bootSideBubbles);
+
+  window.addEventListener('pageshow', rebuildSideBubbles);
+  document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) rebuildSideBubbles(); });
+
+  let tid=null;
+  window.addEventListener('resize', ()=>{ clearTimeout(tid); tid = setTimeout(rebuildSideBubbles, 300); });
+
+
+  if (typeof window.pageInit === 'function'){
+    const orig = window.pageInit;
+    window.pageInit = function(){ try{orig();}finally{rebuildSideBubbles();} };
+  }
+})();
 </script>
 {% endblock %}

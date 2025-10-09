@@ -83,16 +83,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'water_and_sanitation',  # RDS DB name
-        'USER': 'admin',       # RDS admin username
-        'PASSWORD': 'DjangoProject',  # should apply password encryption
-        'HOST': 'fit5120-mysql-manager.chqewewswxbs.ap-southeast-2.rds.amazonaws.com',  # RDS endpoint
-        'PORT': '3306',
+# Manual toggle: set True to use AWS RDS (MySQL); set False to use local SQLite.
+USE_AWS_RDS = False  # <-- flip this to True on EC2 if you want to use RDS
+
+if USE_AWS_RDS:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('DB_NAME', 'water_and_sanitation'),  # RDS DB name
+            'USER': os.getenv('DB_USER', 'admin'),                 # RDS admin username
+            'PASSWORD': os.getenv('DB_PASSWORD', 'DjangoProject'), # should apply password encryption
+            'HOST': os.getenv('DB_HOST', 'fit5120-mysql-manager.chqewewswxbs.ap-southeast-2.rds.amazonaws.com'),  # RDS endpoint
+            'PORT': os.getenv('DB_PORT', '3306'),
+            'CONN_MAX_AGE': int(os.getenv('CONN_MAX_AGE', '60')),  # keep connections alive
+        }
     }
-}
+else:
+    # Local fallback: no SQL server required (use SQLite file under the project)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': str(BASE_DIR / 'local.sqlite3'),
+        }
+    }
 
 
 # Password validation
@@ -141,3 +154,30 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# --- Animal Map data source toggles (used by animal_map_service.py) ---
+# If False, the service will never query DB for sightings (JSON/Cache only).
+# Manual toggle: set True/False directly here.
+USE_DB_FOR_SIGHTINGS = False  # <-- flip this to True only when you want the service to hit the DB
+
+# Where to put/read the JSON file (must be writable). In containers, mount a volume here.
+SIGHTINGS_JSON_PATH = str(BASE_DIR / "data" / "AnimalSighting.json")
+
+
+# --- Diagnostics: print effective DB + animal-map toggles at startup (optional) ---
+# Set PRINT_SETTINGS_SUMMARY=false to silence these lines.
+if os.getenv("PRINT_SETTINGS_SUMMARY", "true").lower() in ("1", "true", "yes"):
+    try:
+        _db = DATABASES.get("default", {})
+        _engine = _db.get("ENGINE", "?")
+        _name   = _db.get("NAME", "?")
+        _host   = _db.get("HOST", "local-file" if "sqlite" in _engine else "?")
+        _port   = _db.get("PORT", "?")
+        print(f"[settings] DEBUG={DEBUG}")
+        print(f"[settings] USE_AWS_RDS={USE_AWS_RDS}")
+        print(f"[settings] DB_ENGINE={_engine}  DB_NAME={_name}  DB_HOST={_host}  DB_PORT={_port}")
+        print(f"[settings] USE_DB_FOR_SIGHTINGS={USE_DB_FOR_SIGHTINGS}")
+        print(f"[settings] SIGHTINGS_JSON_PATH={SIGHTINGS_JSON_PATH}")
+    except Exception as e:
+        print(f"[settings] (diagnostics failed: {e!r})")
