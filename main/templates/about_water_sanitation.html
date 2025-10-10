@@ -128,7 +128,7 @@
     .card:hover{ transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,.24); }
     .card h2{
       margin:0 0 .5em; font-weight:800; letter-spacing:.02em;
-      font-size: clamp(24px, 3vw, 30px);
+      font-size: clamp(20px, 2.5vw, 24px);
       color: var(--accent);
       border-bottom: 2px solid color-mix(in oklab, var(--accent) 70%, transparent);
       display:inline-block; padding-bottom:2px;
@@ -187,7 +187,6 @@
 }
 
 
-
 /* 2) Body/list/links: softer outline */
 .glass p,
 .glass li,
@@ -211,7 +210,6 @@
 .glass, .glass p, .glass li, .glass .team-member, .glass .sponsor p { color:#fff !important; }
 .glass li::marker { color:#fff; opacity:.9; } /* Keep bullets white */
 
-/* Heading font refinements */
 /* Heading font refinements */
   .glass h1, .glass h2, .glass h3{
     font-family: "Super Shape", system-ui, -apple-system, "Segoe UI",
@@ -556,7 +554,7 @@
       const ORIENT = {
         sword: { pitch:0, yaw:90,  roll:0, scale:1.0 },   // Swordfish points "forward" and wanders
         fish:  { pitch:0, yaw:-90, roll:0, scale:0.45 },  // Small fish point left/right for ping-pong
-        manta: { pitch:0, yaw:150, roll:0, scale:1.0 }    // NEW: do not change these angles
+        manta: { pitch:0, yaw:150, roll:3, scale:2.0 }    // NEW: do not change these angles
       };
 
       // ---------- Behaviors ----------
@@ -574,34 +572,41 @@
        * - 'wander' : soft-bound random wandering (used by swordfish)
        */
       function spawnFromTemplate(template, count, opt){
+        const yRange = opt.yRange || [10, 20];       
+        const yBobScale = opt.yBobScale ?? 1.0;      
+
         for (let i=0;i<count;i++){
           const pivot = new THREE.Object3D();
           const model = template.clone(true);
           applyOrientation(model, opt.orient);
           pivot.add(model);
 
-          const posZ = camera.position.z - 30 + THREE.MathUtils.randFloatSpread(10);
-          const posY = THREE.MathUtils.randFloat(10, 20);
-
+          const posZ  = camera.position.z - 30 + THREE.MathUtils.randFloatSpread(10);
+          const posY  = THREE.MathUtils.randFloat(yRange[0], yRange[1]); 
           let vel, speed, dir = Math.random() < 0.5 ? -1 : 1;
 
           if (opt.behavior === 'pingpong'){
-            // Horizontal back-and-forth (same style as fish_3d.glb)
             const x = dir < 0 ? FIELD.xMax : FIELD.xMin;
             pivot.position.set(x, posY, posZ);
             speed = THREE.MathUtils.randFloat(opt.speedMin, opt.speedMax);
-            vel = new THREE.Vector3(dir * speed, 0, 0);
-            fishes.push({ pivot, model, vel, behavior:'pingpong', speed, dir, xMin:FIELD.xMin, xMax:FIELD.xMax });
+            vel   = new THREE.Vector3(dir * speed, 0, 0);
+            fishes.push({
+              pivot, model, vel, behavior:'pingpong',
+              speed, dir, xMin:FIELD.xMin, xMax:FIELD.xMax,
+              baseY: posY, yBobScale
+            });
           } else {
-            // Free wander (used by swordfish)
             pivot.position.set(THREE.MathUtils.randFloatSpread(60), posY, posZ);
-            vel = new THREE.Vector3(THREE.MathUtils.randFloat(-1,1),0,THREE.MathUtils.randFloat(-1,1))
-                    .normalize().multiplyScalar(THREE.MathUtils.randFloat(opt.speedMin, opt.speedMax));
+            vel = new THREE.Vector3(
+              THREE.MathUtils.randFloat(-1,1), 0, THREE.MathUtils.randFloat(-1,1)
+            ).normalize().multiplyScalar(THREE.MathUtils.randFloat(opt.speedMin, opt.speedMax));
             fishes.push({ pivot, model, vel, speedMin:opt.speedMin, speedMax:opt.speedMax, behavior:'wander' });
           }
           scene.add(pivot);
         }
       }
+
+      
 
       // ---------- Templates ----------
       const swordGLB = await loadGLB(MODEL.sword);
@@ -610,12 +615,24 @@
 
       const fishGLB = await loadGLB(MODEL.fish);
       fishGLB.scene.traverse(o=>{ if(o.isMesh && o.material?.map) o.material.map.anisotropy=8; });
-      spawnFromTemplate(fishGLB.scene, 60, { orient: ORIENT.fish,  behavior:'pingpong', speedMin:4.5, speedMax:7.5 });
+      spawnFromTemplate(fishGLB.scene, 60, {
+        orient: ORIENT.fish,
+        behavior:'pingpong',
+        speedMin:4.5, speedMax:7.5,
+        yRange:[12, 20],
+        yBobScale:1.0
+      });
 
       // NEW: Single manta ray — EXACT orientation kept, moves like fish_3d (ping-pong), same speed range
       const mantaGLB = await loadGLB(MODEL.manta);
       mantaGLB.scene.traverse(o=>{ if(o.isMesh && o.material?.map) o.material.map.anisotropy=8; });
-      spawnFromTemplate(mantaGLB.scene, 8, { orient: ORIENT.manta, behavior:'pingpong', speedMin:3.5, speedMax:6.5 });
+      spawnFromTemplate(mantaGLB.scene, 10, {
+        orient: ORIENT.manta,
+        behavior:'pingpong',
+        speedMin:3.5, speedMax:6.5,
+        yRange:[6, 10],
+        yBobScale:2
+      });
 
       // ---------- Animate ----------
       const clock = new THREE.Clock();
@@ -634,7 +651,8 @@
             const bobY = Math.sin(t*1.2 + pivot.id*0.9) * 0.25;
             const driftZ = Math.cos(t*0.6 + pivot.id*0.7) * 0.15;
             pivot.position.x += f.vel.x * dt;
-            pivot.position.y += bobY * dt * 6;
+            const bob = bobY * 2.0 * (f.yBobScale || 1); // 可調的擺幅
+            pivot.position.y = (f.baseY ?? pivot.position.y) + bob;
             pivot.position.z += driftZ * dt * 4;
 
             // Use the instance bounds if present (defaults: -80..80)
