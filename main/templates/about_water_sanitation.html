@@ -128,7 +128,7 @@
     .card:hover{ transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,.24); }
     .card h2{
       margin:0 0 .5em; font-weight:800; letter-spacing:.02em;
-      font-size: clamp(20px, 2.5vw, 24px);
+      font-size: clamp(24px, 3vw, 30px);
       color: var(--accent);
       border-bottom: 2px solid color-mix(in oklab, var(--accent) 70%, transparent);
       display:inline-block; padding-bottom:2px;
@@ -186,19 +186,7 @@
   --outline-soft: rgba(0,0,0,.6);
 }
 
-/* 1) Headings: webkit-stroke + multi-direction shadows as fallback */
- .glass h2, .glass h3 {
-  -webkit-text-stroke: 1px var(--outline);   /* Chrome/Safari */
-  text-shadow:
-    -1px  0   0 var(--outline),
-     1px  0   0 var(--outline),
-     0   -1px 0 var(--outline),
-     0    1px 0 var(--outline),
-    -1px -1px 0 var(--outline),
-    -1px  1px 0 var(--outline),
-     1px -1px 0 var(--outline),
-     1px  1px 0 var(--outline);
-}
+
 
 /* 2) Body/list/links: softer outline */
 .glass p,
@@ -224,17 +212,13 @@
 .glass li::marker { color:#fff; opacity:.9; } /* Keep bullets white */
 
 /* Heading font refinements */
-  .glass h1{
+/* Heading font refinements */
+  .glass h1, .glass h2, .glass h3{
     font-family: "Super Shape", system-ui, -apple-system, "Segoe UI",
                 Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
     font-weight: 200;
   }
 
-.glass h2, .glass h3 { 
-  font-family: "Plus Jakarta Sans", "Poppins", sans-serif;
-  font-weight: 900;
-  letter-spacing: .03em;
-}
 .glass p, .glass li {
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   font-weight: 400;

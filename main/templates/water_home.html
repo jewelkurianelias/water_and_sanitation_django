@@ -147,6 +147,13 @@
       text-shadow: var(--hero-text-shadow);
       margin: 0;
     }
+    /* Keep hero headline on one line (desktop/tablet) */
+    .hero-head{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
     .hero-sub{
       margin: 0;
       font-weight: 600;
@@ -292,7 +299,7 @@
       line-height: 1.5;
     }
 
-    /* Desktop / default (≥ 992px) 4 grids columns */
+    /* Desktop / default (≥ 992px) 4 grids columns
     .grid#videoGrid{ 
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -307,15 +314,15 @@
       .grid#videoGrid{ grid-template-columns: 1fr; }
       #videoGrid .panel{ aspect-ratio: 16/10; min-height: 180px; }
     }
+    */
 
-
-    /* ≤ 992px 
+    /* ≤ 992px */
     @media (max-width: 992px){
       .why-section{ grid-template-columns: 1fr; }
       .why-section .lottie-bg{ display:none; }
       .why-title{ text-align:center; }
       .why-note{ text-align:center; }
-    }*/
+    }
 
     .panel .overlay{
       position:absolute; inset:0; z-index:3;
@@ -661,6 +668,8 @@
 
 
 
+
+
 </style>
 {% endblock %}
 
@@ -673,7 +682,7 @@
 
   <!-- Hero (only on the homepage) -->
   <section class="hero">
-    <article class="panel panel-hero" id="bannerHero">
+    <article class="panel-hero" id="bannerHero">
       <video id="heroVid"
              src="{% static 'file4.mp4' %}"
              playsinline muted loop preload="auto" autoplay
@@ -686,13 +695,27 @@
         <div class="hero-copy-inner" id="heroCopyInner">
           <div class="hero-eyebrow">WATER • HEALTH • COMMUNITY</div>
           <h1 class="hero-head"><img src="{% static 'water_drop_banner.png' %}" 
-            alt="Platypus Icon" width="55" height="55" aria-hidden="true">Welcome to Water &amp; Sanitation
+            alt="Platypus Icon" width="55" height="55" aria-hidden="true">Welcome to Platypure
           </h1>
           <p class="hero-sub">Plan safe, fun family days with clean‑water insights.</p>
         </div>
       </div>
     </article>
   </section>
+
+  <!-- ===== Mid Banner: Future & Family Safety ===== -->
+  <section class="mid-banner" aria-label="Water quality near you">
+    <!-- Make the whole banner clickable -->
+    <a href="{% url 'future_family_safety' %}" class="panel-link" aria-label="Go to Future & Family Safety">
+      <figure class="banner-card">
+        <video class="banner-img" playsinline muted autoplay loop preload="metadata">
+          <source src="{% static 'file3.mp4' %}" type="video/mp4">
+        </video>
+        <!-- <figcaption class="banner-caption">KNOW WATER QUALITY NEAR YOU</figcaption> -->
+      </figure>
+    </a>
+  </section>
+
 
   <!-- ===== Mid Banner (clickable, whole card floats & scales on hover) ===== -->
   <section class="mid-banner" aria-label="Promo banner">
@@ -785,7 +808,7 @@
       </article>
     </a>
 
-    <!-- Future & Family Safety -->
+    <!-- Future & Family Safety
     <a href="{% url 'future_family_safety' %}" class="panel-link">
       <article class="panel">
         <video src="{% static 'file3.mp4' %}" playsinline muted loop preload="metadata" autoplay></video>
@@ -805,7 +828,7 @@
           </div>
         </div>
       </article>
-    </a>
+    </a> -->
 
   </section>
 
