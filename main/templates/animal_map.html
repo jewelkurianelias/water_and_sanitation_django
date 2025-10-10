@@ -788,12 +788,22 @@ function lineUpSpecies(name){
     temp.push(m);
   });
 
+  //lineUpLayer = L.layerGroup(temp).addTo(leafletMap);
+
   lineUpLayer = L.layerGroup(temp).addTo(leafletMap);
 
   setTimeout(()=>{ if(temp[0]){ highlightOnly(temp[0]); temp[0].openPopup(); } }, 120);
 
-  const b = lineUpLayer.getBounds();
-  leafletMap.fitBounds(b, { padding:[30,30] });
+  //const b = lineUpLayer.getBounds();
+
+  const b = L.latLngBounds(temp.map(m => m.getLatLng()));
+  //leafletMap.fitBounds(b, { padding:[30,30] });
+
+    if (b.isValid()) {
+    leafletMap.panTo(b.getCenter(), { animate: true });
+    setTimeout(() => { if (temp[0]) { highlightOnly(temp[0]); temp[0].openPopup(); } }, 150);
+  }
+
 }
 
 /* -------------------------- Gallery & Select -------------------------- */
