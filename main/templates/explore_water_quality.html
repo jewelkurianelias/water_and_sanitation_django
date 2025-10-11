@@ -1,26 +1,181 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}About | Water & Sanitation{% endblock %}
-
-{% block head_extras %}
-{% endblock %}
+{% block title %}Explore Water Quality | Water & Sanitation{% endblock %}
 
 {% block content %}
-<!-- Do NOT touch the header above (it's shared in base.html) -->
+<div class="container" style="max-width:1100px; margin:0 auto;">
+  <header class="page-lead" style="margin: 8px 0 14px;">
+    <h1 class="ws-grad" style="font-size:28px; font-weight:900;">Explore Water Quality</h1>
+    <p class="muted">Forecast groundwater by <b>suburb</b>, and surface water by <b>water body → location</b>. Type to search in the dropdowns.</p>
+  </header>
 
-<!-- >>> Write your own page content here <<< -->
-   <section class="wrap" style="max-width:900px">
-    <article class="panel" style="aspect-ratio:auto; padding:18px">
-      <h1>Coming soon</h1>
-    </article>
+  <!-- Groundwater by suburb -->
+  <section class="card-box" style="margin-bottom:18px;">
+    <div class="card-hd"><span class="ws-grad">Groundwater (by Suburb)</span></div>
+    <div class="card-bd">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-5">
+          <label class="form-label fw-bold" for="gw-suburb">Suburb</label>
+          <input id="gw-suburb" class="form-control-like" placeholder="Type to search suburbs…" list="gw-suburb-list" autocomplete="off">
+          <datalist id="gw-suburb-list"></datalist>
+        </div>
+        <div class="col-lg-4">
+          <label class="form-label fw-bold" for="gw-date">Date</label>
+          <input id="gw-date" type="date" class="form-control-like">
+        </div>
+        <div class="col-lg-3">
+          <button id="gw-btn" class="btn-primary-like">Get Prediction</button>
+        </div>
+      </div>
+
+      <div id="gw-result" class="mt-3"></div>
+    </div>
   </section>
 
-<!-- Do NOT touch the footer below (it's shared in base.html) -->
-{% endblock %}
+  <!-- Surface water by water body → location -->
+  <section class="card-box" style="margin-bottom:18px;">
+    <div class="card-hd"><span class="ws-grad">Surface Water (by Water Body → Location)</span></div>
+    <div class="card-bd">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-4">
+          <label class="form-label fw-bold" for="sw-body">Water body</label>
+          <input id="sw-body" class="form-control-like" placeholder="Type to search water bodies…" list="sw-body-list" autocomplete="off">
+          <datalist id="sw-body-list"></datalist>
+        </div>
+        <div class="col-lg-4">
+          <label class="form-label fw-bold" for="sw-location">Location</label>
+          <input id="sw-location" class="form-control-like" placeholder="Type to search locations…" list="sw-loc-list" autocomplete="off" disabled>
+          <datalist id="sw-loc-list"></datalist>
+        </div>
+        <div class="col-lg-4">
+          <label class="form-label fw-bold" for="sw-date">Date</label>
+          <input id="sw-date" type="date" class="form-control-like">
+        </div>
+      </div>
+      <div class="row g-3 align-items-end mt-2">
+        <div class="col-lg-3 ms-auto">
+          <button id="sw-btn" class="btn-primary-like">Get Prediction</button>
+        </div>
+      </div>
+      <div id="sw-result" class="mt-3"></div>
+    </div>
+  </section>
+</div>
 
-{% block page_scripts %}
 <script>
-  window.pageInit = function(){};
+async function fetchJSON(url){
+  const r = await fetch(url);
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function renderBreakdown(container, title, data){
+  const { percentage, eligible, passed, chemicals } = data;
+  const pct = (percentage ?? 0).toFixed(2);
+
+  const badge = (pct >= 70) ? '<span class="pill pill-good">Good</span>' :
+                (pct >= 40) ? '<span class="pill pill-fair">Fair</span>' :
+                              '<span class="pill pill-poor">Poor</span>';
+
+  const head = `
+    <div class="row g-3">
+      <div class="col-md-4"><div class="card-box kpi">
+        <div class="kpi-label">Overall score</div>
+        <div class="kpi-value">${pct}%</div>
+      </div></div>
+      <div class="col-md-4"><div class="card-box kpi">
+        <div class="kpi-label">Category</div>
+        <div class="kpi-pill">${badge}</div>
+      </div></div>
+      <div class="col-md-4"><div class="card-box kpi">
+        <div class="kpi-label">Eligible</div>
+        <div class="kpi-value">${passed}/${eligible}</div>
+      </div></div>
+    </div>`;
+
+  const rows = (chemicals || []).map(c => `
+    <tr>
+      <td>${c.chemical}</td>
+      <td>${(c.predicted ?? '–')}</td>
+      <td>${(c.threshold ?? '–')}</td>
+      <td>${c.pass ? '✅ Pass' : '❌ Fail'}</td>
+    </tr>`).join("");
+
+  const table = `
+    <div class="card-box mt-3">
+      <div class="card-hd"><span class="ws-grad">${title} – Chemicals considered</span></div>
+      <div class="card-bd">
+        <div class="table-responsive">
+          <table class="table table-sm" style="color:var(--text);">
+            <thead><tr><th>Chemical</th><th>Predicted</th><th>Threshold</th><th>Result</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+  container.innerHTML = head + table;
+}
+
+// ---------- Populate type-ahead sources ----------
+async function loadGWSuburbs(){
+  const data = await fetchJSON("/api/gw/suburbs");
+  const dl = document.getElementById("gw-suburb-list");
+  dl.innerHTML = (data.items || []).map(it => `<option value="${it.value}"></option>`).join("");
+}
+async function loadSWBodies(){
+  const data = await fetchJSON("/api/sw/water_bodies");
+  const dl = document.getElementById("sw-body-list");
+  dl.innerHTML = (data.items || []).map(it => `<option value="${it.value}"></option>`).join("");
+}
+
+document.getElementById("sw-body").addEventListener("change", async (e)=>{
+  const body = e.target.value.trim();
+  const locInput = document.getElementById("sw-location");
+  const dl = document.getElementById("sw-loc-list");
+  dl.innerHTML = "";
+  locInput.value = "";
+  locInput.disabled = true;
+  if(!body) return;
+  const data = await fetchJSON(`/api/sw/locations?water_body=${encodeURIComponent(body)}`);
+  dl.innerHTML = (data.items || []).map(it => `<option value="${it.value}"></option>`).join("");
+  locInput.disabled = false;
+});
+
+// ---------- Buttons ----------
+document.getElementById("gw-btn").addEventListener("click", async ()=>{
+  const suburb = document.getElementById("gw-suburb").value.trim();
+  const date = document.getElementById("gw-date").value;
+  const out = document.getElementById("gw-result");
+  out.innerHTML = "";
+  if(!suburb || !date){ out.innerHTML = `<p class="muted">Select suburb and date.</p>`; return; }
+  try{
+    const data = await fetchJSON(`/api/quality/gw?suburb=${encodeURIComponent(suburb)}&date=${encodeURIComponent(date)}`);
+    renderBreakdown(out, `Groundwater in ${suburb} (${date})`, data);
+  }catch(err){
+    out.innerHTML = `<div class="muted">Error: ${String(err).slice(0,200)}</div>`;
+  }
+});
+
+document.getElementById("sw-btn").addEventListener("click", async ()=>{
+  const body = document.getElementById("sw-body").value.trim();
+  const loc = document.getElementById("sw-location").value.trim();
+  const date = document.getElementById("sw-date").value;
+  const out = document.getElementById("sw-result");
+  out.innerHTML = "";
+  if(!body || !loc || !date){ out.innerHTML = `<p class="muted">Select water body, location, and date.</p>`; return; }
+  try{
+    const data = await fetchJSON(`/api/quality/sw?water_body=${encodeURIComponent(body)}&location=${encodeURIComponent(loc)}&date=${encodeURIComponent(date)}`);
+    const title = `Surface water – ${body} / ${loc} (${date})`;
+    renderBreakdown(out, title, data);
+  }catch(err){
+    out.innerHTML = `<div class="muted">Error: ${String(err).slice(0,200)}</div>`;
+  }
+});
+
+// init
+loadGWSuburbs();
+loadSWBodies();
 </script>
 {% endblock %}
