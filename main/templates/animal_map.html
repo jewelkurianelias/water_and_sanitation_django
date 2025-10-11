@@ -9,18 +9,77 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
 
 <style>
-  :root { --am-card-bg:#fff; --am-text:#111; --am-muted:#555; --am-border:#ddd; }
+
+  /* Register Super Shape (only font, no color changes) */
+  @font-face{
+    font-family: "Super Shape";
+    src:
+      url("{% static 'fonts/super-shape/SuperShiny-0v0rG.ttf' %}") format("truetype");
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+  }
+
+
+:root{
+  --am-water-tint: color-mix(in oklab, #009dff 38%, transparent);
+  --tint-w: 60%; 
+  --am-bubble:     rgba(9, 233, 249, 0.9);
+  --am-bubble-2:   rgba(4, 41, 253, 0.8);
+}
+
+
+
+.am-card::before, .am-aside::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(30% 35% at 20% 0%, var(--am-water-tint), transparent 70%),
+    radial-gradient(30% 30% at 80% 80%, var(--am-water-tint), transparent 70%);
+  mix-blend-mode: screen;
+  opacity:.7;
+}
+
+
+.water-bubbles{
+  position:absolute; inset:0;
+  overflow:hidden; pointer-events:none;
+  z-index: 0;  
+}
+
+
+.water-bubble{
+  position:absolute;
+  width:12px; height:12px; border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, var(--am-bubble), var(--am-bubble-2) 60%, transparent 62%);
+  box-shadow:
+    inset 0 0 8px rgba(255,255,255,.6),
+    0 0 10px rgba(125,211,252,.25);
+  filter: saturate(115%);
+  transform: translate3d(0,0,0);   
+  will-change: transform, opacity;
+  opacity:.0;
+}
+
+
+@media (prefers-reduced-motion: reduce){
+  .water-bubbles{ display:none !important; }
+}
+
+  :root { --am-card-bg:#ffffff9a; --am-text:#111; --am-muted:#555; --am-border:#ddd; }
+
   :root[data-theme="dark"] { --am-card-bg:#0f172a; --am-text:#e5e7eb; --am-muted:#94a3b8; --am-border:#334155; }
 
   .am-shell{max-width:1400px;margin:0 auto;padding:0 14px;}
   .am-section{margin-bottom:30px;}
   .am-card{background:var(--am-card-bg); color:var(--am-text); border:1px solid var(--am-border); border-radius:14px; padding:18px; box-shadow:0 2px 10px rgba(0,0,0,.08);}
-  .am-card h2{margin:0 0 8px;font-size:1.3rem;}
+  .am-card h1{margin:0 0 8px;font-size:1.3rem;}
   .am-muted{color:var(--am-muted);}
   .am-split{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;}
   @media(max-width:1000px){.am-split{grid-template-columns:1fr}}
-  .am-map{width:100%;height:500px;border-radius:12px;background:#eef;}
-  .am-aside{border:1px solid var(--am-border); border-radius:12px; padding:10px; background:var(--am-card-bg); overflow:auto; max-height:520px; position:sticky; top:12px;}
+  .am-map{width:100%;height:700px;border-radius:12px;background:#eef;}
+  .am-aside{border:1px solid var(--am-border); border-radius:12px; padding:10px; background:var(--am-card-bg); overflow:auto; max-height:700px; position:sticky; top:12px;}
   .am-aside h3{font-size:1rem;margin:0 0 8px;}
   .am-gallery{display:flex;flex-direction:column;gap:10px;}
   .am-figure{cursor:pointer; display:flex; align-items:center; gap:12px; padding:8px; border-radius:8px; border:1px solid transparent; color:var(--am-text); background:transparent;}
@@ -31,7 +90,7 @@
   .am-select{border:1px solid var(--am-border); border-radius:8px; padding:8px 10px; min-width:220px; background:var(--am-card-bg); color:var(--am-text);}
   .am-btn{border:1px solid var(--am-border); background:var(--am-card-bg); padding:8px 10px; border-radius:8px; cursor:pointer; color:var(--am-text);}
   .am-btn:hover{filter:brightness(1.05);}
-  .am-count{margin-left:auto; color:var(--am-muted); font-size:.9rem;}
+  .am-count{margin-left:auto; color:var(--am-muted); font-size:2.5rem;}
   .am-quest{display:flex; align-items:center; gap:10px; padding:6px 10px; border:1px dashed var(--am-border); border-radius:10px; background:var(--am-card-bg);}
   .am-quest .am-bar{ width:160px; height:10px; background:#e5e7eb; border-radius:6px; overflow:hidden;}
   :root[data-theme="dark"] .am-quest .am-bar{ background:#1f2937; }
@@ -59,6 +118,66 @@
     70%{transform:scale(1.08) translateY(-2px)}
     100%{transform:scale(1) translateY(0)}
   }
+
+
+
+  .am-split{
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;   
+    gap: 16px;
+  }
+
+
+  @media (min-width: 1200px){
+    .am-split{ grid-template-columns: 1.1fr 1fr; }
+  }
+
+
+  @media (max-width: 1200px) and (min-width: 1000px){
+    .am-split{ grid-template-columns: minmax(0,1fr) 460px; }
+  }
+
+
+  @media (max-width: 1000px){
+    .am-split{ grid-template-columns: 1fr; }
+  }
+
+
+  .am-map{
+    width: 100%;
+    height: 700px;  
+    border-radius: 12px;
+    background: #eef;
+  }
+
+
+  .am-aside{
+    border: 1px solid var(--am-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: var(--am-card-bg);
+    overflow: auto;
+    max-height: 700px;     
+    position: sticky;
+    top: 12px;
+  }
+
+
+  .am-gallery .am-figure{ 
+    gap: 14px; 
+    padding: 10px; 
+  }
+  .am-gallery .am-figure img{
+    max-width: 220px !important;   
+    width: clamp(220px, 30vw, 360px);
+    height: auto;
+    object-fit: contain;
+  }
+  .am-gallery .am-figure strong{
+    font-size: clamp(1.1rem, 1.25vw, 1.4rem);
+  }
+
+
 
   /* ===== My Animal Cards (front/back flip with subtle shine) ===== */
   .am-collection-wrap{ display:flex; gap:12px; flex-wrap:wrap; }
@@ -162,29 +281,185 @@
     animation: none !important;
     transform: translateX(-120%) !important;
   }
+
+  .am-card h2,
+  .am-count,
+  .am-card p,
+  .am-card small,
+  .am-aside h3{
+    font-family: "Super Shape", system-ui, -apple-system, "Segoe UI",
+                Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+    font-weight: 100;
+  }
+
+  .am-muted,
+  .am-btn,
+  .am-gallery strong,
+  .am-quest,
+  .am-popup h4,
+  .am-popup p strong,
+  .am-popup p.small,
+  .am-popup p em{
+    font-family: 'Joti One', cursive;
+  }
+
+  /* —— Gold reflective numbers (font unaffected) —— */
+  .am-gold{
+    background: linear-gradient(180deg,
+      #fff7cc 0%,
+      #ffe58a 22%,
+      #ffd24a 45%,
+      #f5b400 60%,
+      #c98c1a 78%,
+      #fff2a8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;               
+    text-shadow:
+      0 1px 0 rgba(0,0,0,.15),
+      0 2px 6px rgba(0,0,0,.12);      
+    filter: saturate(1.05) contrast(1.03);
+  }
+  :root[data-theme="dark"] .am-gold{
+    filter: saturate(1.1) contrast(1.08) brightness(1.05);
+  }
+
+  /* === Neon title (color fill + outer glow + on/off) === */
+  .am-neon{
+    position:relative; display:inline-block;
+    --glow-rgb: 255,235,160;        
+    --glow-strength: 0.2;
+  }
+  .am-neon > .am-fill{
+    background: linear-gradient(200deg,
+      #ff4d6d, #ffd166, #8aff80, #4cc9f0, #b794f6, #ff4df3, #ff4d6d);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;            
+    animation: amNeonSweep 7s linear infinite;
+
+    text-shadow: none;
+  }
+
+  .am-neon::before{
+    content: attr(data-text);
+    position:absolute; inset:0;
+    color: transparent;
+    text-shadow:
+      0 0 6px  rgba(var(--glow-rgb), .45),
+      0 0 14px rgba(var(--glow-rgb), .35),
+      0 0 28px rgba(var(--glow-rgb), .25),
+      0 0 48px rgba(var(--glow-rgb), .18);
+    opacity: var(--glow-strength);
+    pointer-events:none;
+  }
+
+
+  .am-neon[data-on="0"] > .am-fill{
+    animation: none;
+    background: none;
+    -webkit-background-clip: initial; background-clip: initial;
+    color: inherit;                 
+  }
+  .am-neon[data-on="0"]::before{ opacity:0; }
+
+
+  :root[data-theme="dark"] .am-neon{ --glow-strength: 1; }
+  @keyframes amNeonSweep{
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 220% 50%; }
+  }
+
+
+
+  .am-head{
+    display:grid;
+    grid-template-columns: 1fr minmax(270px, 770px); 
+    gap:20px;
+    align-items:center;
+    margin-bottom:12px;
+  }
+
+
+  .am-heroimgs{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    align-items:center;
+    justify-items:center;
+  }
+
+
+  .am-heroimgs img,
+  .am-img{
+    width:100%;
+    height:auto;
+    object-fit:contain;
+    max-height:clamp(100px, 16vw, 200px); 
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none !important;
+  }
+
+
+  .am-img--pirate   { max-height:clamp(120px, 18vw, 220px); }
+  .am-img--platypus { max-height:clamp(140px, 20vw, 260px); }
+  .am-img--treasure { max-height:clamp(120px, 18vw, 220px); }
+
+
+  @media (max-width:900px){
+    .am-head{ grid-template-columns:1fr; }
+    .am-heroimgs{ grid-template-columns:repeat(3,1fr); }
+  }
+
+
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="am-shell am-section">
   <div class="am-card">
-    <h2>Animal Sightings Map</h2>
-    <p class="am-muted">Look! Find animals near the water.</p>
+    <div class="water-bubbles" aria-hidden="true"></div>
+    <div class="am-head">
+      <div class="am-titlebox">
+        <h2 class="am-gold">
+          <span id="title-neon" class="am-neon" data-text="ANIMAL" data-on="1" style="font-size:4rem;">
+            <span class="am-fill">ANIMAL</span>
+          </span>
+          SIGHTINGS MAP
+        </h2>
+        <p class="am-muted" style="font-size:1.5rem;">Look! Find animals near the water.</p>
+      </div>
+
+    <div class="am-heroimgs" aria-hidden="true">
+      <img class="am-img am-img--pirate"   src="{% static 'kid_pirate.png' %}"    alt="">
+      <img class="am-img am-img--platypus" src="{% static 'map_platypure.png' %}"  alt="">
+      <img class="am-img am-img--treasure" src="{% static 'map_treasure.png' %}"   alt="">
+    </div>
+    </div>
+
 
     <div class="am-toolbar">
-      <select id="am-select" class="am-select" aria-label="Choose animal">
+      <select id="am-select" class="am-select" aria-label="Choose animal" hidden>
         <option value="">Choose animal…</option>
       </select>
 
-      <button id="am-reload" class="am-btn" type="button">Reload</button>
-      <button id="am-clear-view" class="am-btn" type="button" title="Reset view">Clear View</button>
+      <button id="am-reload" class="am-btn" type="button" hidden>Reload</button>
+      <button id="am-clear-view" class="am-btn" type="button" title="Reset view" hidden>Clear View</button>
       <button id="am-reset-score" class="am-btn" type="button" title="Reset your score">Reset Score</button>
 
       <div id="am-quest" class="am-quest" aria-live="polite">
         ⭐ Found <b id="am-found">0</b> species —
-        Score <b id="am-score">0</b>/100
+        Score <b id="am-score">0</b><!-- /100-->
         <div class="am-bar"><i id="am-bar"></i></div>
-        <span id="am-milestone" class="am-muted" style="font-size:.9rem;">Score milestones: 25 / 50 / 75 / 100</span>
+        <span id="am-milestone" class="am-muted" style="font-size:1.2rem;">
+          Score milestones:
+          <span class="am-gold">25</span> /
+          <span class="am-gold">50</span> /
+          <span class="am-gold">75</span> /
+          <span class="am-gold">100</span>
+        </span>
         <span id="am-badge" class="am-badge" style="display:none;"></span>
       </div>
 
@@ -208,7 +483,8 @@
 <!-- My Animal Cards Collection -->
 <section id="am-collection" class="am-shell am-section">
   <div class="am-card">
-    <h2>My Animal Cards <small class="am-muted">These are the animals you've found!</small></h2>
+    <div class="water-bubbles" aria-hidden="true"></div>
+    <h2>My Animal Cards <small class="am-muted am-gold">These are the animals you've found!</small></h2>
     <div id="am-card-collection" class="am-collection-wrap" aria-live="polite"></div>
   </div>
 </section>
@@ -243,7 +519,10 @@ function saveCards(){ localStorage.setItem(LS_CARDS, JSON.stringify(collectedCar
 
 /* -------------------------- Score helpers -------------------------- */
 function computeScore(){ if(!totalSpecies) return 0; return Math.round(Math.min(100,(discovered.size/totalSpecies)*100)); }
-function updateQuestUI(){ els.found.textContent=discovered.size; const s=computeScore(); els.score.textContent=s; els.bar.style.width=s+"%"; updateBadge(); }
+function updateQuestUI(){ 
+els.found.classList.add('am-gold');
+els.score.classList.add('am-gold');
+els.found.textContent=discovered.size; const s=computeScore(); els.score.textContent=s; els.bar.style.width=s+"%"; updateBadge(); }
 const SCORE_MILESTONES=[25,50,75,100];
 function checkScoreMilestones(){
   const s = computeScore();
@@ -289,7 +568,7 @@ function popupHtml(it){
   const home = HABITATS[key]   || "bays and reefs";
   const photo = it.photo_url || it.icon_url || "";
   return `<div class="am-popup">${photo?`<img src="${photo}" alt="${name}" loading="lazy"/>`:""}
-    <h4>${name}</h4><p><strong>${line}</strong></p><p class="small">I live in <em>${home}</em>.</p></div>`;
+    <h4>${name}</h4><p><strong>${line}</strong></p><p class="small"><em>I live in ${home}.</em></p></div>`;
 }
 
 /* -------------------------- Icon helpers -------------------------- */
@@ -466,7 +745,7 @@ function renderMarkers(items){
 
   if(markers.length){ clusterLayer.addLayers(markers); els.empty.style.display="none"; }
   else { els.empty.style.display="block"; }
-  els.count.textContent = markers.length + " found";
+  els.count.innerHTML = `<span class="am-gold">${markers.length}</span> found`;
 }
 
 /* -------------------------- Line-Up (per species) -------------------------- */
@@ -509,12 +788,22 @@ function lineUpSpecies(name){
     temp.push(m);
   });
 
+  //lineUpLayer = L.layerGroup(temp).addTo(leafletMap);
+
   lineUpLayer = L.layerGroup(temp).addTo(leafletMap);
 
   setTimeout(()=>{ if(temp[0]){ highlightOnly(temp[0]); temp[0].openPopup(); } }, 120);
 
-  const b = lineUpLayer.getBounds();
-  leafletMap.fitBounds(b, { padding:[30,30] });
+  //const b = lineUpLayer.getBounds();
+
+  const b = L.latLngBounds(temp.map(m => m.getLatLng()));
+  //leafletMap.fitBounds(b, { padding:[30,30] });
+
+    if (b.isValid()) {
+    leafletMap.panTo(b.getCenter(), { animate: true });
+    setTimeout(() => { if (temp[0]) { highlightOnly(temp[0]); temp[0].openPopup(); } }, 150);
+  }
+
 }
 
 /* -------------------------- Gallery & Select -------------------------- */
@@ -621,8 +910,95 @@ function bindEvents(){
   bindCardHoverGlobal();
 }
 
+
+(function(){
+  const prefersReduced = window.matchMedia &&
+                         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  const rand = (a,b)=> a + Math.random()*(b-a);
+
+  function hydrateBubbles(root){
+    if (!root) return;
+    const W = root.clientWidth || 600;
+    const H = root.clientHeight || 400;
+    const COUNT = Math.round(Math.min(28, Math.max(12, (W*H)/28000)));
+
+    for (let i=0; i<COUNT; i++){
+      const b = document.createElement('span');
+      b.className = 'water-bubble';
+      const size   = rand(8, 18);
+      const startX = rand(0, W - size);
+      const startY = rand(H*0.65, H*0.98);
+      Object.assign(b.style, {
+        width:  size+'px', height: size+'px',
+        left: startX+'px', top: startY+'px'
+      });
+      root.appendChild(b);
+
+      if (window.gsap){
+        const drift = rand(12, 40);
+        const up    = startY + rand(30, H*0.85);
+        const dur   = rand(5.5, 10.5);
+        const delay = rand(0, 6);
+
+        gsap.fromTo(b,
+          { y: 0, opacity: 0.0, x: 0 },
+          {
+            y: -up, opacity: 0.9, duration: dur, delay,
+            repeat: -1, ease: 'sine.inOut',
+            onRepeat(){
+              const s = rand(8, 18);
+              b.style.width  = s+'px';
+              b.style.height = s+'px';
+              gsap.set(b, { y: 0, x: 0, opacity: 0.0 });
+            }
+          }
+        );
+        gsap.to(b, { x: `+=${drift}`, duration: rand(2.2, 3.6),
+                     yoyo: true, repeat: -1, ease: 'sine.inOut', delay: delay*0.5 });
+      }
+    }
+  }
+
+  function rebuildAll(){
+    document.querySelectorAll('.water-bubbles').forEach(root=>{
+      root.innerHTML = '';            
+      hydrateBubbles(root);           
+    });
+  }
+
+  function boot(){
+    document.querySelectorAll('.water-bubbles').forEach(root=>{
+      if (!root.firstElementChild) hydrateBubbles(root);
+    });
+  }
+
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') boot();
+  else document.addEventListener('DOMContentLoaded', boot);
+
+
+  window.addEventListener('pageshow', rebuildAll);
+
+
+  document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) rebuildAll(); });
+
+
+  let tid=null;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(tid);
+    tid = setTimeout(rebuildAll, 300);
+  });
+
+
+  window.addEventListener('turbo:load', rebuildAll);
+  document.body && document.body.addEventListener?.('htmx:afterSwap', rebuildAll);
+})();
 /* -------------------------- Boot -------------------------- */
 window.pageInit = function(){ bindEvents(); updateQuestUI(); loadData(); };
 document.addEventListener("DOMContentLoaded", window.pageInit);
 </script>
+
+
 {% endblock %}

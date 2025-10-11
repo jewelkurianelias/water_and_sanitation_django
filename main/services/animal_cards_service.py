@@ -59,47 +59,47 @@ _LOCAL_KIDS_TUPLES =[
     (1, 'Water inside an elephant',
      '<p>About 70% of an elephant is water.</p>',
      '<p>This water helps with blood flow, cooling, and moving nutrients.</p>',
-     'Tap me to unlock the card!', 15, 1),
+     'Tap me to unlock the card!', 5, 1),
 
     (2, 'How watery is a tomato?',
       '<p>About 95% of a tomato is water.</p>',
       '<p>That’s why tomatoes are so juicy.</p>',
-      'Tap me to unlock the card!', 18, 0),
+      'Tap me to unlock the card!', 5, 0),
 
     (3, 'Water in our bodies',
      '<p>About 66% of the human body is water.</p>',
      '<p>It’s in our brain, blood, and organs.</p>',
-     'Tap me to unlock the card!', 18, 0),
+     'Tap me to unlock the card!', 5, 0),
 
     (4, 'Longest water pipeline in Australia',
      '<p>The longest water supply pipeline is in Western Australia.</p>',
      '<p>It carries water long distances to drier areas.</p>',
-     'Tap me to unlock the card!', 22, 0),
+     'Tap me to unlock the card!', 5, 0),
 
     (5, 'Where at home uses the most water?',
      '<p>The bathroom uses the most water at home.</p>',
      '<p>Short showers and turning off taps can save a lot.</p>',
-     'Tap me to unlock the card!', 15, 0),
+     'Tap me to unlock the card!', 5, 0),
 
     (6, 'Who lacks safe drinking water?',
      '<p>About 1 in 4 people lack safe drinking water.</p>',
      '<p>Clean water projects help families stay healthy.</p>',
-     'Tap me to unlock the card!', 18, 0),
+     'Tap me to unlock the card!', 5, 0),
 
     (7, 'Sea turtles and plastic',
      '<p>About 52% of sea turtles have eaten plastic.</p>',
      '<p>Plastic makes them sick and comes from pollution.</p>',
-     'Tap me to unlock the card!', 18, 0),
+     'Tap me to unlock the card!', 5, 0),
 
     (8, 'Whale sharks and plastic',
-     '<p>A whale shark may swallow about 137 pieces of plastic every hour.</p>',
+     '<p>Whale shark may swallow about 137 pieces plastic every hour.</p>',
      '<p>They can’t tell plastic from food while filtering water.</p>',
-     'Tap me to unlock the card!', 15, 0),
+     'Tap me to unlock the card!', 5, 0),
 
     (9, 'Sharks and mercury',
      '<p>About 25% of sharks have unsafe mercury levels.</p>',
      '<p>Pollution builds up in the fish they eat.</p>',
-     'Tap me to unlock the card!', 18, 0)
+     'Tap me to unlock the card!', 5, 0)
 ]
 
 

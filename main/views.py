@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from django.views.decorators.http import require_GET
-from .services import diving_game_service, animal_map_service , animal_cards_service, future_family_safety_service, home_service, about_water_sanitation_service, pollution_sources_service, pollution_sources_service
+from .services import diving_game_service, animal_map_service , animal_cards_service, future_family_safety_service, home_service, pollution_sources_service, pollution_sources_service
 from .services.animal_cards_service import fetch_kids_cards, build_collect_cards_json
+from .services.about_water_sanitation_service import get_about_content
 
 
 from django.http import JsonResponse, HttpRequest
@@ -15,7 +16,8 @@ def home(request):
     return render(request, 'water_home.html')
 
 def about_water_sanitation(request):
-    return render(request, "about_water_sanitation.html")
+    ctx = {"about": get_about_content()}
+    return render(request, "about_water_sanitation.html", ctx)
 
 def explore_water_quality(request):
     return render(request, "explore_water_quality.html")
@@ -24,16 +26,27 @@ def explore_water_quality(request):
 # Ranjana - 15/09/2025
 # Ranjana - 18/09/2025  views.py (update animal_map)
 
-# Kevin - 18/09/2025 map revise
+# Kevin - 24/09/2025 map revise
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
+from django.http import JsonResponse
+from django.shortcuts import render
 
-from .services.animal_map_service import get_all_sightings_dict
+from functools import lru_cache
+from django.core.cache import cache
+
+from .services.animal_map_service import (
+    get_all_sightings_dict,
+    rebuild_sightings_json_from_db,  # New: manual rebuild trigger
+    clear_sightings_cache,           # Optional: clear cache before rebuild
+)
 
 import os
 import re
 
 
+# --- Optional: memoize icon resolution to avoid repeated static-finder scans per sighting ---
+@lru_cache(maxsize=512)
 def _resolve_icon_url(common_name: str) -> str:
     """
     Return a static URL for an icon under static/sea-animal/*.png.
@@ -45,39 +58,38 @@ def _resolve_icon_url(common_name: str) -> str:
         base = common_name.strip()
         lower = base.lower()
         candidates = [
-            # keep original first (may contain spaces & capitals)
             f"sea-animal/{base}.png",
             f"sea-animal/{base.replace(' ', '_')}.png",
             f"sea-animal/{base.replace(' ', '-')}.png",
-
-            # lowercase variants
             f"sea-animal/{lower}.png",
             f"sea-animal/{lower.replace(' ', '_')}.png",
             f"sea-animal/{lower.replace(' ', '-')}.png",
-
-            # sometimes data already contains underscores/dashes and needs the other
             f"sea-animal/{re.sub(r'[_-]+', ' ', lower)}.png",
             f"sea-animal/{re.sub(r'[_\\s]+', '-', lower)}.png",
             f"sea-animal/{re.sub(r'[-\\s]+', '_', lower)}.png",
-
             "sea-animal/default.png",
         ]
 
     for rel in candidates:
         if finders.find(rel):
             return static(rel)
-
-    # Last-resort fallback (even if not found by finders, still return a URL)
     return static("sea-animal/default.png")
 
+
+# --- Optional: cache the whole gallery list to avoid filesystem scans on every request ---
+_GALLERY_CACHE_KEY = "animal_gallery_all_pngs"
+_GALLERY_TTL = 60 * 60 * 24  # 24h
 
 def _scan_gallery_from_static():
     """
     Scan collected static files and build a full gallery from sea-animal/*.png.
     This shows ALL species images that exist in static, not just those with sightings.
     """
+    cached = cache.get(_GALLERY_CACHE_KEY)
+    if cached is not None:
+        return cached
+
     results = {}
-    # Iterate all static finders and list files
     for f in finders.get_finders():
         for path, storage in getattr(f, "list", lambda *a, **k: [])([]):
             if not path.lower().startswith("sea-animal/"):
@@ -85,27 +97,23 @@ def _scan_gallery_from_static():
             if not path.lower().endswith(".png"):
                 continue
 
-            # path like "sea-animal/Bottlenose dolphin.png"
             filename = os.path.basename(path)
             name_no_ext = os.path.splitext(filename)[0]
 
-            # Convert file name to display name: underscores/dashes -> spaces, title-case
+            # Convert file name to display name: underscores/dashes -> spaces; title-case if all lowercase
             display_name = re.sub(r"[_-]+", " ", name_no_ext).strip()
-            # Keep original capitalization if filename already looks titled; else .title()
             if display_name.islower():
                 display_name = display_name.title()
 
             icon_url = static(path)
-
-            # Use dict to de-duplicate by display_name, keep first found
             results.setdefault(display_name, {
                 "common_name": display_name,
                 "icon_url": icon_url,
-                # You can add more fields later, e.g. "desc"
             })
 
-    # Stable sort by name
-    return [results[k] for k in sorted(results.keys(), key=lambda s: s.lower())]
+    gallery = [results[k] for k in sorted(results.keys(), key=lambda s: s.lower())]
+    cache.set(_GALLERY_CACHE_KEY, gallery, _GALLERY_TTL)
+    return gallery
 
 
 def animal_map(request):
@@ -120,16 +128,29 @@ def animal_map_data(request):
     """
     JSON endpoint for sightings + full gallery.
     Keep original variable names for center/bounds to avoid breaking JS.
+
+    Optional query params:
+      - ?rebuild=1         : force-rebuild AnimalSighting.json from DB (admin/debug use)
+      - ?refresh_gallery=1 : clear cached gallery and rescan static
     """
+    # --- Optional: on-demand JSON rebuild (admin/debug) ---
+    if request.GET.get("rebuild") == "1":
+        # Clear caches first to avoid stale data, then force rebuild
+        clear_sightings_cache()
+        rebuild_sightings_json_from_db()
+
+    # --- Optional: refresh gallery cache and icon LRU ---
+    if request.GET.get("refresh_gallery") == "1":
+        cache.delete(_GALLERY_CACHE_KEY)
+        _resolve_icon_url.cache_clear()
+
     # --- keep these names as requested ---
     victoria_coords = (-37.4713, 144.7852)
     victoria_bounds = [(-39.2, 140.9), (-33.9, 150.0)]
 
     raw = get_all_sightings_dict()  # list[dict]: sighting_id, latitude, longitude, common_name
 
-    # Build sightings (map markers)
     items = []
-    # For quick "focusAnimal": map a species -> first sighting coords
     first_coords_by_name = {}
 
     for s in raw:
@@ -141,8 +162,8 @@ def animal_map_data(request):
             lat = float(lat)
             lon = float(lon)
         except (TypeError, ValueError):
-            continue  # skip invalid coords
-        
+            continue
+
         if name in first_coords_by_name:
             continue
 
@@ -156,10 +177,8 @@ def animal_map_data(request):
             "icon_url": icon_url,
             "popup_html": f"<strong>{name}</strong>",
         })
-
         first_coords_by_name.setdefault(name, (lat, lon))
 
-    # Build FULL gallery by scanning static/sea-animal (independent of sightings)
     gallery = _scan_gallery_from_static()
 
     payload = {
@@ -170,75 +189,13 @@ def animal_map_data(request):
             "tile_attribution": "© OpenStreetMap contributors",
         },
         "items": items,
-        "gallery": gallery,  # right-side original-size images (ALL images in static)
-        # for front-end focusing to first known sighting when clicking gallery
+        "gallery": gallery,
         "first_coords_by_name": {k: list(v) for k, v in first_coords_by_name.items()},
     }
 
     resp = JsonResponse(payload, json_dumps_params={"ensure_ascii": False})
     resp["Cache-Control"] = "public, max-age=300"  # light browser cache (5 min)
     return resp
-#--------------------------------------------------------------------
-
-
-def animal_map(request):
-    """
-    Render the page shell. The map and markers are drawn on the client side
-    by fetching /animal_map/data (JSON).
-    """
-    return render(request, "animal_map.html")
-
-
-def animal_map_data(request):
-    """
-    JSON endpoint for sightings. Frontend fetches this to draw markers.
-    Keeps original variable names: victoria_coords, victoria_bounds.
-    """
-    # --- keep these names the same as your original logic ---
-    victoria_coords = (-37.4713, 144.7852)
-    victoria_bounds = [(-39.2, 140.9), (-33.9, 150.0)]
-
-    raw = get_all_sightings_dict()  # list[dict]: sighting_id, latitude, longitude, common_name
-    first_coords_by_name = {}
-    items = []
-    for s in raw:
-        lat = s.get("latitude")
-        lon = s.get("longitude")
-        name = s.get("common_name") or "Unknown"
-        try:
-            lat = float(lat)
-            lon = float(lon)
-        except (TypeError, ValueError):
-            continue  # skip invalid coords
-        
-        if name in first_coords_by_name:
-            continue
-        items.append({
-            "id": s.get("sighting_id"),
-            "latitude": lat,
-            "longitude": lon,
-            "common_name": name,
-            "icon_url": _resolve_icon_url(name),
-            "popup_html": f"<strong>{name}</strong>",
-        })
-        first_coords_by_name[name] = (lat, lon)
-
-    payload = {
-        "meta": {
-            # expose with the same names so the frontend can reuse existing logic
-            "victoria_coords": list(victoria_coords),
-            "victoria_bounds": [list(victoria_bounds[0]), list(victoria_bounds[1])],
-            "tile_url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            "tile_attribution": "© OpenStreetMap contributors",
-        },
-        "items": items,
-    }
-
-    resp = JsonResponse(payload, json_dumps_params={"ensure_ascii": False})
-    resp["Cache-Control"] = "public, max-age=300"  # 5 minutes browser cache
-    return resp
-
-
 
 #--------------------------------------------------------------------
 """
