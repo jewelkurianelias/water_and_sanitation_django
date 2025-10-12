@@ -1,15 +1,16 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-import json
-from django.views.decorators.http import require_GET
-from .services import diving_game_service, animal_map_service , animal_cards_service, future_family_safety_service, home_service, pollution_sources_service, pollution_sources_service
-from .services.animal_cards_service import fetch_kids_cards, build_collect_cards_json
-from .services.about_water_sanitation_service import get_about_content
-
-
 from django.http import JsonResponse, HttpRequest
 from django.shortcuts import render
-from .services.future_family_safety_service import predict_site, list_sites, health_payload
+import json
+from django.views.decorators.http import require_GET
+from .services import diving_game_service, animal_map_service , animal_cards_service, future_family_safety_service, home_service, pollution_sources_service
+from .services.animal_cards_service import fetch_kids_cards, build_collect_cards_json
+from .services.about_water_sanitation_service import get_about_content
+from .services.explore_water_quality_service import (
+    list_gw_suburbs, list_sw_water_bodies, list_sw_locations,
+    predict_groundwater, predict_surface
+)
+
+from .services.future_family_safety_service import list_sites, health_payload
 
 # Create your views here.
 def home(request):
@@ -29,8 +30,6 @@ def explore_water_quality(request):
 # Kevin - 24/09/2025 map revise
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
-from django.http import JsonResponse
-from django.shortcuts import render
 
 from functools import lru_cache
 from django.core.cache import cache
@@ -216,7 +215,7 @@ def future_family_safety(request):
         "site_options": list_sites(),
     }
     if site_id:
-        ctx["result"] = predict_site(site_id=site_id, horizon_days=horizon_days)
+        ctx["result"] = predict_surface(site_id=site_id, horizon_days=horizon_days)
 
     return render(request, "future_family_safety.html", ctx)
 
@@ -282,7 +281,65 @@ def animal_cards(request):
 # def animal_map(request):
 #     return render(request, "animal_map.html")
 
+#------------------------------JEWEL----------------------------------------
 
+@require_GET
+def api_gw_suburbs(request):
+    try:
+        q = (request.GET.get("q") or "").strip().lower()
+        items = list_gw_suburbs()
+        if q:
+            items = [s for s in items if q in s.lower()]
+        return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+@require_GET
+def api_sw_water_bodies(request):
+    try:
+        q = (request.GET.get("q") or "").strip().lower()
+        items = list_sw_water_bodies()
+        if q:
+            items = [s for s in items if q in s.lower()]
+        return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+@require_GET
+def api_sw_locations(request):
+    try:
+        water_body = (request.GET.get("water_body") or "").strip()
+        if not water_body:
+            return JsonResponse({"items": []})
+        q = (request.GET.get("q") or "").strip().lower()
+        items = list_sw_locations(water_body)
+        if q:
+            items = [s for s in items if q in s.lower()]
+        return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+# ---------------- NEW: Prediction endpoints ----------------
+@require_GET
+def api_quality_gw(request):
+    suburb = (request.GET.get("suburb") or "").strip()
+    date_str = (request.GET.get("date") or "").strip()
+    if not suburb or not date_str:
+        return JsonResponse({"error": "suburb and date are required"}, status=400)
+    res = predict_groundwater(suburb=suburb, date_str=date_str)
+    return JsonResponse(res, json_dumps_params={"ensure_ascii": False})
+
+@require_GET
+def api_quality_sw(request):
+    water_body = (request.GET.get("water_body") or "").strip()
+    location = (request.GET.get("location") or "").strip()
+    date_str = (request.GET.get("date") or "").strip()
+    if not water_body or not location or not date_str:
+        return JsonResponse({"error": "water_body, location and date are required"}, status=400)
+    res = predict_surface(water_body=water_body, location=location, date_str=date_str)
+    return JsonResponse(res, json_dumps_params={"ensure_ascii": False})
+
+#------------------------------------------------------------
 
 def diving_game(request):
     return render(request, "diving_game.html")
