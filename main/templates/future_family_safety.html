@@ -345,14 +345,19 @@ html[data-theme="light"] .range-card {
 .range-borderline { background: rgba(234,179,8,0.15); color: #eab308; font-weight: 700; }
 .range-unsafe { background: rgba(239,68,68,0.15); color: #ef4444; font-weight: 700; }
 
+/* === NEW: Make chemical tables use the same palette as safe ranges === */
+.range-table.chem-table th,
+.range-table.chem-table td { text-align: center; }
+.range-table.chem-table .chem-name { text-align: left; }
+.range-table.chem-table .chem-num  { text-align: right; font-variant-numeric: tabular-nums; }
+/* Result cell inherits .range-safe / .range-unsafe colors */
+.range-table .chem-result.range-safe   {}
+.range-table .chem-result.range-unsafe {}
 
   /* =========================================================
      LIGHT THEME "FROSTED GLASS" OVERRIDES FOR FIVE SECTIONS
-     - We only change surfaces of the 5 requested parts in light mode.
-     - Dark mode remains unchanged.
      ========================================================= */
   html[data-theme="light"] .card-box{
-    /* Frosted glass for the 4 major cards (filters, safety, chemistry, 48h) */
     background: rgba(255,255,255,0.68);
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
@@ -360,35 +365,30 @@ html[data-theme="light"] .range-card {
     box-shadow: 0 10px 30px rgba(15,23,42,0.08);
   }
   html[data-theme="light"] .kpi{
-    /* KPI tiles inside the cards also get the same surface feel */
     background: rgba(255,255,255,0.68);
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border: 1px solid rgba(255,255,255,0.45);
   }
   html[data-theme="light"] .water-tile{
-    /* Left metric tiles (pH / EC / DO / ORP) as frosted chips */
     background: rgba(255,255,255,0.6);
     backdrop-filter: blur(10px) saturate(160%);
     -webkit-backdrop-filter: blur(10px) saturate(160%);
     border-color: rgba(255,255,255,0.45);
   }
   html[data-theme="light"] .water-panel{
-    /* Right detail panel uses a slightly stronger blur to separate from background */
     background: rgba(255,255,255,0.62);
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border-color: rgba(255,255,255,0.5);
   }
   html[data-theme="light"] details.expander .body{
-    /* The collapsible info body also becomes frosted for consistency */
     background: rgba(255,255,255,0.5);
     backdrop-filter: blur(10px) saturate(160%);
     -webkit-backdrop-filter: blur(10px) saturate(160%);
     border: 1px dashed rgba(0,0,0,0.12);
   }
   html[data-theme="light"] #loading-overlay{
-    /* (5) Full-screen loading overlay turns into a light frosted veil */
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(10px) saturate(180%);
     -webkit-backdrop-filter: blur(10px) saturate(180%);
@@ -405,7 +405,6 @@ html[data-theme="light"] .range-card {
 
   /* Light mode legend-chip */
   html[data-theme="light"] .legend-chip {
-        /* Right detail panel uses a slightly stronger blur to separate from background */
       background: rgba(255,255,255,0.62);
       backdrop-filter: blur(12px) saturate(160%);
       -webkit-backdrop-filter: blur(12px) saturate(160%);
@@ -438,22 +437,22 @@ html[data-theme="light"] .range-card {
 
   /* -------- Dark mode -------- */
   html[data-theme="dark"] .card-box {
-    background: rgba(17,24,39,0.95); /* Maintain a dark background */
-    border: 1px solid rgba(30,111,255,0.6); /* Blue border */
+    background: rgba(17,24,39,0.95);
+    border: 1px solid rgba(30,111,255,0.6);
     box-shadow:
-      inset 0 0 12px rgba(30,111,255,0.25), /* inner halo */
-      0 0 20px rgba(30,111,255,0.45);       /* outer halo */
+      inset 0 0 12px rgba(30,111,255,0.25),
+      0 0 20px rgba(30,111,255,0.45);
   }
 
   /* -------- Light mode -------- */
   html[data-theme="light"] .card-box {
-    background: rgba(255,255,255,0.68); /* Retain the glass-like appearance */
+    background: rgba(255,255,255,0.68);
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
-    border: 1px solid rgba(30,111,255,0.35); /* A lighter blue border */
+    border: 1px solid rgba(30,111,255,0.35);
     box-shadow:
-      inset 0 0 10px rgba(30,111,255,0.15), /* inner halo */
-      0 0 18px rgba(30,111,255,0.25);       /* outer halo */
+      inset 0 0 10px rgba(30,111,255,0.15),
+      0 0 18px rgba(30,111,255,0.25);
   }
 
   html[data-theme="light"] .img-box {
@@ -471,7 +470,9 @@ html[data-theme="light"] .range-card {
   <header class="page-lead" style="margin: 8px 0 14px;">
     <h1 class="ws-grad" style="font-size:28px; font-weight:900;">Future &amp; Family Safety</h1>
     <p class="muted">
-      Simple Good / Fair / Poor guidance for <strong>{{ horizon_days|default:2 }}</strong> days ahead, plus how conditions may change over the next 48 hours.
+      Choose <strong>Groundwater Search</strong> to check underground water quality by suburb, <br>
+      or <strong>Surface Water Search</strong> to explore rivers, lakes, and creeks by location. <br>
+      You’ll also see how water conditions are expected to change over the next 48 hours.
     </p>
   </header>
 
@@ -530,7 +531,7 @@ html[data-theme="light"] .range-card {
   <!-- ===================== REPLACEMENT ENDS HERE ===================== -->
 
   <!-- Family Safety Indicator -->
-  <section class="card-box" id="safety" style="margin-bottom:18px;" tabindex="-1">
+  <section class="card-box" id="safety" style="margin-bottom:18px;" tabindex="-1" hidden>
     <div class="card-hd">
       <span class="ws-grad">Family Safety Indicator</span>
       <details class="expander">
@@ -650,7 +651,7 @@ html[data-theme="light"] .range-card {
 
 
   <!-- Water chemistry interactive (integrated block) -->
-  <section class="card-box" style="margin-bottom:18px;">
+  <section class="card-box" style="margin-bottom:18px;" hidden>
     <div class="card-hd">
       <span class="ws-grad">Water Chemistry (in {{ horizon_days|default:2 }} days)</span>
       <details class="expander">
@@ -797,7 +798,6 @@ html[data-theme="light"] .range-card {
   
 
   <!-- 48-hour forecast -->
-  <!-- 48-hour forecast — Red vs Green (single bar, ties -> Keep Using, amplified split) -->
 <section class="card-box" style="margin-bottom:18px;">
   <style>
     :root{
@@ -1271,20 +1271,24 @@ function renderBreakdown(container, title, data){
       </div></div>
     </div>`;
 
-  const rows = (chemicals || []).map(c => `
-    <tr>
-      <td>${c.chemical}</td>
-      <td>${(c.predicted ?? '–')}</td>
-      <td>${(c.threshold ?? '–')}</td>
-      <td>${c.pass ? '✅ Pass' : '❌ Fail'}</td>
-    </tr>`).join("");
+  /* rows colored using the same palette as the safe ranges table */
+  const rows = (chemicals || []).map(c => {
+    const resClass = c.pass ? 'range-safe' : 'range-unsafe';
+    return `
+      <tr>
+        <td class="chem-name">${c.chemical}</td>
+        <td class="chem-num">${(c.predicted ?? '–')}</td>
+        <td class="chem-num">${(c.threshold ?? '–')}</td>
+        <td class="chem-result ${resClass}">${c.pass ? '✅ Pass' : '❌ Fail'}</td>
+      </tr>`;
+  }).join("");
 
   const table = `
     <div class="card-box mt-3">
       <div class="card-hd"><span class="ws-grad">${title} – Chemicals considered</span></div>
       <div class="card-bd">
         <div class="table-responsive">
-          <table class="table table-sm" style="color:var(--text);">
+          <table class="range-table chem-table">
             <thead><tr><th>Chemical</th><th>Predicted</th><th>Threshold</th><th>Result</th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
@@ -1296,13 +1300,15 @@ function renderBreakdown(container, title, data){
 }
 
 // ---------- Populate type-ahead sources ----------
-async function loadGWSuburbs(){
-  const data = await fetchJSON("/api/gw/suburbs");
+async function loadGWSuburbs(q=""){
+  const url = q ? `/api/gw/suburbs?q=${encodeURIComponent(q)}` : `/api/gw/suburbs`;
+  const data = await fetchJSON(url);
   const dl = document.getElementById("gw-suburb-list");
   dl.innerHTML = (data.items || []).map(it => `<option value="${it.value}"></option>`).join("");
 }
-async function loadSWBodies(){
-  const data = await fetchJSON("/api/sw/water_bodies");
+async function loadSWBodies(q=""){
+  const url = q ? `/api/sw/water_bodies?q=${encodeURIComponent(q)}` : `/api/sw/water_bodies`;
+  const data = await fetchJSON(url);
   const dl = document.getElementById("sw-body-list");
   dl.innerHTML = (data.items || []).map(it => `<option value="${it.value}"></option>`).join("");
 }
@@ -1352,7 +1358,24 @@ document.getElementById("sw-btn").addEventListener("click", async ()=>{
 });
 
 // init
-loadGWSuburbs();
-loadSWBodies();
+const gwSuburbInput = document.getElementById("gw-suburb");
+gwSuburbInput.addEventListener("input", (e)=> loadGWSuburbs(e.target.value.trim()));
+loadGWSuburbs("");
+
+const swBodyInput = document.getElementById("sw-body");
+swBodyInput.addEventListener("input", (e)=> loadSWBodies(e.target.value.trim()));
+loadSWBodies("");
+
+const swLocInput = document.getElementById("sw-location");
+swLocInput.addEventListener("input", async (e)=>{
+  const body = document.getElementById("sw-body").value.trim();
+  if(!body) return;
+  const q = e.target.value.trim();
+  const url = `/api/sw/locations?water_body=${encodeURIComponent(body)}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+  const data = await fetchJSON(url);
+  document.getElementById("sw-loc-list").innerHTML =
+    (data.items || []).map(it => `<option value="${it.value}"></option>`).join("");
+});
+
 </script>
 {% endblock %}

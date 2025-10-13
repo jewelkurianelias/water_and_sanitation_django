@@ -289,7 +289,7 @@ def api_gw_suburbs(request):
         q = (request.GET.get("q") or "").strip().lower()
         items = list_gw_suburbs()
         if q:
-            items = [s for s in items if q in s.lower()]
+            items = [s for s in items if s.lower().startswith(q)]
         return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
@@ -300,7 +300,7 @@ def api_sw_water_bodies(request):
         q = (request.GET.get("q") or "").strip().lower()
         items = list_sw_water_bodies()
         if q:
-            items = [s for s in items if q in s.lower()]
+            items = [s for s in items if s.lower().startswith(q)]
         return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
@@ -314,7 +314,7 @@ def api_sw_locations(request):
         q = (request.GET.get("q") or "").strip().lower()
         items = list_sw_locations(water_body)
         if q:
-            items = [s for s in items if q in s.lower()]
+            items = [s for s in items if s.lower().startswith(q)]
         return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
