@@ -15,6 +15,13 @@ urlpatterns = [
 
     path("diving_game/", views.diving_game, name="diving_game"),
 
+    # --- Water Quality (new) ---
+    path("api/gw/suburbs", views.api_gw_suburbs, name="api_gw_suburbs"),
+    path("api/sw/water_bodies", views.api_sw_water_bodies, name="api_sw_water_bodies"),
+    path("api/sw/locations", views.api_sw_locations, name="api_sw_locations"),
+    path("api/quality/gw", views.api_quality_gw, name="api_quality_gw"),
+    path("api/quality/sw", views.api_quality_sw, name="api_quality_sw"),
+
     path("api/sites", views.api_sites, name="api_sites"),
     path("api/family-safety/forecast", views.api_family_safety_forecast, name="api_family_safety_forecast"),
     path("healthz", views.healthz, name="healthz"), # New prediction health check endpoint

@@ -5,10 +5,14 @@ from django.views.decorators.http import require_GET
 from .services import diving_game_service, animal_map_service , animal_cards_service, future_family_safety_service, home_service, pollution_sources_service, pollution_sources_service
 from .services.animal_cards_service import fetch_kids_cards, build_collect_cards_json
 from .services.about_water_sanitation_service import get_about_content
+from django.utils.html import escape
 
+from .services.explore_water_quality_service import (
+    list_gw_suburbs, list_sw_water_bodies, list_sw_locations,
+    predict_groundwater, predict_surface
+)
 
-from django.http import JsonResponse, HttpRequest
-from django.shortcuts import render
+from django.http import HttpRequest
 from .services.future_family_safety_service import predict_site, list_sites, health_payload
 
 # Create your views here.
@@ -25,12 +29,13 @@ def explore_water_quality(request):
 #--------------------------------------------------------------------
 # Ranjana - 15/09/2025
 # Ranjana - 18/09/2025  views.py (update animal_map)
-
 # Kevin - 24/09/2025 map revise
+
+# Ranjana - 12/10/2025 new sightings.csv and insert the new CSV into db
+# Kevin - 12/10/2025 update the back-end service and adjust the front-end
+
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
-from django.http import JsonResponse
-from django.shortcuts import render
 
 from functools import lru_cache
 from django.core.cache import cache
@@ -148,7 +153,8 @@ def animal_map_data(request):
     victoria_coords = (-37.4713, 144.7852)
     victoria_bounds = [(-39.2, 140.9), (-33.9, 150.0)]
 
-    raw = get_all_sightings_dict()  # list[dict]: sighting_id, latitude, longitude, common_name
+    raw = get_all_sightings_dict()  # list[dict]: sighting_id, latitude, longitude, common_name, size_text, comparison
+
 
     items = []
     first_coords_by_name = {}
@@ -157,6 +163,10 @@ def animal_map_data(request):
         lat = s.get("latitude")
         lon = s.get("longitude")
         name = (s.get("common_name") or "Unknown").strip()
+
+        # NEW: read new fields (with safe defaults)
+        size_text = (s.get("size_text") or "").strip()
+        comparison = (s.get("comparison") or "").strip()
 
         try:
             lat = float(lat)
@@ -169,11 +179,19 @@ def animal_map_data(request):
 
         icon_url = _resolve_icon_url(name)
 
+        # NEW: safe popup text with escaping; show size/comparison if present
+        info_line = " · ".join([t for t in (size_text, comparison) if t])
+        popup_html = f"<strong>{escape(name)}</strong>"
+        if info_line:
+            popup_html += f"<br><small>{escape(info_line)}</small>"
+
         items.append({
             "id": s.get("sighting_id"),
             "latitude": lat,
             "longitude": lon,
             "common_name": name,
+            "size_text": size_text,         # NEW
+            "comparison": comparison,       # NEW
             "icon_url": icon_url,
             "popup_html": f"<strong>{name}</strong>",
         })
@@ -282,6 +300,65 @@ def animal_cards(request):
 # def animal_map(request):
 #     return render(request, "animal_map.html")
 
+#------------------------------JEWEL----------------------------------------
+
+@require_GET
+def api_gw_suburbs(request):
+    try:
+        q = (request.GET.get("q") or "").strip().lower()
+        items = list_gw_suburbs()
+        if q:
+            items = [s for s in items if s.lower().startswith(q)]
+        return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+@require_GET
+def api_sw_water_bodies(request):
+    try:
+        q = (request.GET.get("q") or "").strip().lower()
+        items = list_sw_water_bodies()
+        if q:
+            items = [s for s in items if s.lower().startswith(q)]
+        return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+@require_GET
+def api_sw_locations(request):
+    try:
+        water_body = (request.GET.get("water_body") or "").strip()
+        if not water_body:
+            return JsonResponse({"items": []})
+        q = (request.GET.get("q") or "").strip().lower()
+        items = list_sw_locations(water_body)
+        if q:
+            items = [s for s in items if s.lower().startswith(q)]
+        return JsonResponse({"items": [{"label": s, "value": s} for s in items]})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+# ---------------- NEW: Prediction endpoints ----------------
+@require_GET
+def api_quality_gw(request):
+    suburb = (request.GET.get("suburb") or "").strip()
+    date_str = (request.GET.get("date") or "").strip()
+    if not suburb or not date_str:
+        return JsonResponse({"error": "suburb and date are required"}, status=400)
+    res = predict_groundwater(suburb=suburb, date_str=date_str)
+    return JsonResponse(res, json_dumps_params={"ensure_ascii": False})
+
+@require_GET
+def api_quality_sw(request):
+    water_body = (request.GET.get("water_body") or "").strip()
+    location = (request.GET.get("location") or "").strip()
+    date_str = (request.GET.get("date") or "").strip()
+    if not water_body or not location or not date_str:
+        return JsonResponse({"error": "water_body, location and date are required"}, status=400)
+    res = predict_surface(water_body=water_body, location=location, date_str=date_str)
+    return JsonResponse(res, json_dumps_params={"ensure_ascii": False})
+
+#------------------------------------------------------------
 
 
 def diving_game(request):

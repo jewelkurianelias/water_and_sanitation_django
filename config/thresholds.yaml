@@ -1,0 +1,26 @@
+# Units should match your CSVs (or convert upstream).
+Alkalinity Total (CaCO3): 200.0
+Aluminium: 0.2
+Ammonia (Total): 0.5
+Arsenic: 0.01
+Cadmium: 0.002
+Chloride as Cl: 250
+Chromium: 0.05
+Colour (True Filtered): 15
+Copper: 2.0
+Dissolved Oxygen (DO): {threshold: 8.0, direction: above}   # Example: if higher-is-better, add "direction: above"
+Fluoride as F: 1.5
+Iron: 0.3
+Lead: 0.01
+Manganese: 0.1
+Mercury: 0.001
+Molybdenum: 0.05
+Nickel: 0.02
+Nitrate (NO2): 50.0
+Nitrite (NO3): 3.0
+Selenium: 0.01
+Sodium as Na: 180
+Sulphate as SO4: 250
+Total Dissolved Solids (TDS): 600
+Turbidity: 5
+Zinc: 3.0
