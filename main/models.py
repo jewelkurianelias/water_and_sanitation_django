@@ -25,6 +25,8 @@ class AnimalSighting(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     common_name = models.CharField(max_length=255)
+    size_text = models.CharField(max_length=64, null=True, blank=True)
+    comparison = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         ordering = ["sighting_id"]

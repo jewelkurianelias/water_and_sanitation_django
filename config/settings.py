@@ -161,9 +161,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Manual toggle: set True/False directly here.
 USE_DB_FOR_SIGHTINGS = False  # <-- flip this to True only when you want the service to hit the DB
 
-# Where to put/read the JSON file (must be writable). In containers, mount a volume here.
-SIGHTINGS_JSON_PATH = str(BASE_DIR / "data" / "AnimalSighting.json")
-
 
 # --- Diagnostics: print effective DB + animal-map toggles at startup (optional) ---
 # Set PRINT_SETTINGS_SUMMARY=false to silence these lines.
@@ -178,6 +175,5 @@ if os.getenv("PRINT_SETTINGS_SUMMARY", "true").lower() in ("1", "true", "yes"):
         print(f"[settings] USE_AWS_RDS={USE_AWS_RDS}")
         print(f"[settings] DB_ENGINE={_engine}  DB_NAME={_name}  DB_HOST={_host}  DB_PORT={_port}")
         print(f"[settings] USE_DB_FOR_SIGHTINGS={USE_DB_FOR_SIGHTINGS}")
-        print(f"[settings] SIGHTINGS_JSON_PATH={SIGHTINGS_JSON_PATH}")
     except Exception as e:
         print(f"[settings] (diagnostics failed: {e!r})")

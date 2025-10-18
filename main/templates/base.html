@@ -59,7 +59,7 @@
     /* ==================== Nav Guide bar ==================== */
     #navGuideBar{
       position: relative;
-      z-index: 3000;             /* make button above water/boat layers */
+      z-index: 3;             /* make button above water/boat layers */
       display: flex;
       justify-content: flex-end;
       padding: .25rem 1rem .5rem;
@@ -85,15 +85,15 @@
       transition: transform .15s ease, opacity .2s ease, filter .2s ease;
       transform: scale(var(--guide-scale, 1));
       position: relative; overflow: hidden;
-      border: 1px solid #c99700;
+      border: 1px solid #0d00c9;
 
       /* gold gradient + glow */
-      background: linear-gradient(145deg,#a97700 0%,#ffd700 35%,#fff4b1 50%,#ffd700 65%,#a97700 100%);
+      background: linear-gradient(145deg,#08f1f1 0%,#00ccff 35%,#fffffc 50%,#00c8ff 65%,#002aa9 100%);
       color:#111827;
       box-shadow:
         inset 0 1px 0 #fff7cc,
-        0 6px 18px rgba(255,215,0,.28),
-        0 0 14px rgba(255,215,0,.35);
+        0 6px 18px rgba(0, 247, 255, 0.28),
+        0 0 14px rgba(0, 247, 255, 0.35);
       text-shadow: 0 1px 0 rgba(255,255,255,.4);
       filter: saturate(1.1);
       animation: guideJiggle 1.9s ease-in-out infinite;
@@ -116,7 +116,11 @@
       60% { transform: translateY(1px)  scale(var(--guide-scale,1)) rotate(0.25deg); }
     }
     .guide-btn .guide-icon{ width:16px; height:16px; flex:0 0 16px; }
-    .guide-btn .label{ position: relative; top: 1px; }
+    .guide-btn .label{ position: relative; top: 0px; }
+
+    .guide-btn .label, .btn-skip, .btn-prev, .btn-next, .title{
+      font-family: 'Joti One', cursive;
+    }
 
     /* ==================== Spotlight overlay ==================== */
     #spotlightOverlay{ position:fixed; inset:0; z-index:10000; display:none; }
@@ -137,7 +141,7 @@
     /* Mascots (positioned on overlay, follow the target element) */
     #spotlightOverlay .mascot{
       position: fixed;
-      width: var(--mascot-size, 200px);
+      width: var(--mascot-size, 250px);
       pointer-events: none; user-select: none;
       filter: drop-shadow(0 8px 18px rgba(0,0,0,.45));
       opacity: .98;
@@ -157,6 +161,8 @@
       padding:14px 14px 12px; transition: top .28s ease, left .28s ease;
       z-index: 10002;
     }
+
+
     #spotlightOverlay .coach h3{ font-size:1rem; margin:.1rem 0 .35rem; font-weight:800; }
     #spotlightOverlay .coach p{ margin:0 0 .6rem; font-size:.95rem; line-height:1.35; color: var(--muted, #a6b0bf); }
     #spotlightOverlay .coach .actions{ display:flex; justify-content:space-between; gap:.5rem; }
@@ -170,9 +176,17 @@
     #spotlightOverlay .coach button.primary{ background:#ffd166; color:#111827; border-color:#f4c24a; }
     #spotlightOverlay .coach button:disabled{ opacity:.6; cursor:not-allowed; }
 
+    #spotlightOverlay,
+    #spotlightOverlay .blocker {
+      overscroll-behavior: contain;
+      touch-action: none; 
+    }
+
     @media (max-width: 991.98px){
       #navGuideBar{ padding-top:.35rem; }
     }
+
+    
   </style>
 </head>
 <body>
@@ -345,6 +359,7 @@
         nav.classList.remove('collapsing'); nav.classList.add('show');
         nav.style.removeProperty('height'); nav.style.removeProperty('visibility'); nav.style.removeProperty('display');
       } else {
+        nav.classList.remove('show');
         nav.style.removeProperty('height'); nav.style.removeProperty('visibility'); nav.style.removeProperty('display');
       }
     }
@@ -537,8 +552,55 @@
     const water_home_link = Array.from(document.querySelectorAll('header .menu a')).find(a=>{ try{ return new URL(a.href, location.href).pathname===water_HOME_PATH; }catch(e){ return false; }});
     if (water_home_link){ water_home_link.addEventListener('pointerenter', water_prefetch_home_videos, { once:true, passive:true }); }
     if (!water_is_on_home){ const water_idle=window.requestIdleCallback || (fn=>setTimeout(fn,2000)); water_idle(()=> water_prefetch_home_videos()); }
-    document.addEventListener('shown.bs.collapse', e => { if (e.target && e.target.id==='primaryNav') window.dispatchEvent(new Event('resize')); });
-    document.addEventListener('hidden.bs.collapse', e => { if (e.target && e.target.id==='primaryNav') window.dispatchEvent(new Event('resize')); });
+    function relayoutAfterNavToggle(){
+      window.dispatchEvent(new CustomEvent('navtoggled'));
+    }
+
+    document.addEventListener('shown.bs.collapse', e => {
+      if (e.target && e.target.id==='primaryNav') relayoutAfterNavToggle();
+    });
+    document.addEventListener('hidden.bs.collapse', e => {
+      if (e.target && e.target.id==='primaryNav') relayoutAfterNavToggle();
+    });
+
+
+    /* ===== Scroll lock helpers ===== */
+    let __lockScrollY = 0;
+
+    function lockScroll() {
+      __lockScrollY = window.scrollY || window.pageYOffset || 0;
+
+      const html = document.documentElement;
+      html.dataset._sb = html.style.scrollBehavior || "";
+      html.style.scrollBehavior = "auto";
+
+      Object.assign(document.body.style, {
+        position: 'fixed',
+        top: `-${__lockScrollY}px`,
+        left: '0',
+        right: '0',
+        width: '100%',
+        overflow: 'hidden'
+      });
+    }
+
+    function unlockScroll() {
+      const html = document.documentElement;
+      const prevBehavior = html.dataset._sb ?? "";
+      html.style.scrollBehavior = prevBehavior;
+      delete html.dataset._sb;
+
+
+      const y = Math.max(0, __lockScrollY);
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, y);
+    }
+
 
     /************ Navigation Spotlight Guide + Mascot (HOME only) ************/
     (function initNavGuide(){
@@ -576,11 +638,11 @@
 
       /* Steps definition (5 steps to match 5 mascots) */
       const steps = [
-        { el: ()=> findNavLinkByPath(PATH_HOME),  title:'Home',                           desc:'Go back to the homepage and featured content.' },
-        { el: ()=> findNavLinkByPath(PATH_NEAR),  title:'Know Water Quality Near You',    desc:'Check water quality around your current or chosen location.' },
-        { el: ()=> document.querySelector('.kids-nav .kids-link'), title:'For Kids – Know & Play', desc:'Kid-friendly cards and an interactive animal map.' },
-        { el: ()=> findNavLinkByPath(PATH_ABOUT), title:'About Us',                       desc:'Learn who we are and what this project offers.' },
-        { el: ()=> document.getElementById('lightBtn'), title:'Lights',                   desc:'Toggle light/dark and watch the water scene react.' }
+        { el: ()=> findNavLinkByPath(PATH_HOME),  title:'Where do you start from here?',                           desc:'Go back to the homepage and featured content.' },
+        { el: ()=> findNavLinkByPath(PATH_NEAR),  title:'Check water quality near you?',    desc:'Check water quality around your current or chosen location.' },
+        { el: ()=> document.querySelector('.kids-nav .kids-link'), title:'Want games and animal facts?', desc:'Kid-friendly cards and an interactive animal map.' },
+        { el: ()=> findNavLinkByPath(PATH_ABOUT), title:'Who are we and why us?',                       desc:'Learn who we are and what this project offers.' },
+        { el: ()=> document.getElementById('lightBtn'), title:'Prefer light or dark mode?',                   desc:'Toggle light/dark and watch the water scene react.' }
       ].filter(Boolean);
 
       let idx=0, prevWasCollapsed=null, bsCollapse=null;
@@ -617,7 +679,7 @@
       }
 
       /* Distance knobs: 200..220 per step (deterministic: +5 each step) */
-      function getShiftYFor(i){ return [200, 210, 220, 130, 160][i] ?? 210; }
+      function getShiftYFor(i){ return [200, 260, 220, 130, 160][i] ?? 210; }
 
       function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
@@ -679,6 +741,7 @@
 
       function openOverlay(){
         overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false');
+        lockScroll();   
         coach.querySelector('.btn-next').focus({ preventScroll:true });
         window.addEventListener('resize', refresh);
         window.addEventListener('scroll', refresh, { passive:true });
@@ -686,6 +749,7 @@
       }
       function closeOverlay(markSeen){
         overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true');
+        unlockScroll();
         window.removeEventListener('resize', refresh); window.removeEventListener('scroll', refresh);
         document.removeEventListener('keydown', onKey);
         mascots.forEach(m => m && (m.style.display='none'));
@@ -711,6 +775,23 @@
         const idle=window.requestIdleCallback || (fn=>setTimeout(fn, 900));
         idle(()=> setTimeout(()=> start(), 300));
       }
+
+
+      overlay.addEventListener('wheel',  e => e.preventDefault(), { passive:false });
+      overlay.addEventListener('touchmove', e => e.preventDefault(), { passive:false });
+
+
+      function onKey(e){
+        const k = e.key;
+
+        if (k === 'Escape'){ e.preventDefault(); return closeOverlay(true); }
+        if (k === 'ArrowRight'){ e.preventDefault(); return next(); }
+        if (k === 'ArrowLeft'){ e.preventDefault(); return prev(); }
+
+        const scrollKeys = ['PageUp','PageDown','Home','End','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '];
+        if (scrollKeys.includes(k)) e.preventDefault();
+      }
+
 
       window.water_nav_tour = { start, next, prev, close: ()=>closeOverlay(false) };
     })();

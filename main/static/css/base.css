@@ -476,6 +476,14 @@ footer{
   -webkit-background-clip: text; background-clip: text; color: transparent;
   -webkit-text-stroke: 2px rgb(0, 0, 0);
   /*text-shadow: 0 0 12px #3d5afeaa, 0 0 20px #536dfeaa, 0 0 28px #91a6ffaa, 0 0 4px #fff8, 0 2px 8px #e0e9ffcc;*/
+  background-size: 200% 100%;
+  animation: loadingGradient 4.2s linear infinite;
+  will-change: background-position; /* optional */
+}
+
+@keyframes loadingGradient{
+  0%   { background-position: 200% 0; }
+  100% { background-position: -100% 0; }
 }
 
 #platypureLogo { max-height: 75px; }

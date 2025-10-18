@@ -28,9 +28,14 @@ ABOUT_CONTENT = {
             "heading": "Our Vision",
             "type": "paragraph",
             "body": (
-                "A future where every family and child in Melbourne understands the importance of "
-                "clean water and takes action to protect it, contributing to SDG 6."
+                'A future where every family and child in Melbourne understands the importance of '
+                'clean water and takes action to protect it, contributing to '
             ),
+            "link": {
+                "text": "SDG 6",
+                "url": "https://sdgs.un.org/goals/goal6",
+            },
+            "body_suffix": ".",
         },
         {
             "heading": "Project Background",
@@ -47,7 +52,7 @@ ABOUT_CONTENT = {
         "Simple data visualisations to understand water quality and risks.",
     ],
     "future_plans": [
-        "Expand water prediction coverage in Victoria.",
+        "Expand water prediction coverage in Australia.",
         "Add more games for children.",
         "Collaborate with environmental organisations and local councils.",
         "Develop a mobile-friendly version.",
