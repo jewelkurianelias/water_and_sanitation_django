@@ -26,8 +26,11 @@ def explore_water_quality(request):
 #--------------------------------------------------------------------
 # Ranjana - 15/09/2025
 # Ranjana - 18/09/2025  views.py (update animal_map)
-
 # Kevin - 24/09/2025 map revise
+
+# Ranjana - 12/10/2025 new sightings.csv and insert the new CSV into db
+# Kevin - 12/10/2025 update the back-end service and adjust the front-end
+
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
 
@@ -147,7 +150,8 @@ def animal_map_data(request):
     victoria_coords = (-37.4713, 144.7852)
     victoria_bounds = [(-39.2, 140.9), (-33.9, 150.0)]
 
-    raw = get_all_sightings_dict()  # list[dict]: sighting_id, latitude, longitude, common_name
+    raw = get_all_sightings_dict()  # list[dict]: sighting_id, latitude, longitude, common_name, size_text, comparison
+
 
     items = []
     first_coords_by_name = {}
@@ -156,6 +160,10 @@ def animal_map_data(request):
         lat = s.get("latitude")
         lon = s.get("longitude")
         name = (s.get("common_name") or "Unknown").strip()
+
+        # NEW: read new fields (with safe defaults)
+        size_text = (s.get("size_text") or "").strip()
+        comparison = (s.get("comparison") or "").strip()
 
         try:
             lat = float(lat)
@@ -168,11 +176,19 @@ def animal_map_data(request):
 
         icon_url = _resolve_icon_url(name)
 
+        # NEW: safe popup text with escaping; show size/comparison if present
+        info_line = " · ".join([t for t in (size_text, comparison) if t])
+        popup_html = f"<strong>{escape(name)}</strong>"
+        if info_line:
+            popup_html += f"<br><small>{escape(info_line)}</small>"
+
         items.append({
             "id": s.get("sighting_id"),
             "latitude": lat,
             "longitude": lon,
             "common_name": name,
+            "size_text": size_text,         # NEW
+            "comparison": comparison,       # NEW
             "icon_url": icon_url,
             "popup_html": f"<strong>{name}</strong>",
         })

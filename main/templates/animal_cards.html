@@ -1023,6 +1023,7 @@
   color: #eaf6ff;
   text-shadow: 0 1px 0 rgba(0,0,0,.45);
   transform: translate(-50%, 0);
+  z-index: 10002; 
 }
 
 .coach-body { font-size: 14px; line-height: 1.6; }
@@ -1095,6 +1096,31 @@
 @media (prefers-reduced-motion: reduce){
   .water-bubbles.side{ display:none !important; }
 }
+
+
+.coach-dim{
+  position: absolute; inset: 0;
+  background: transparent;
+  pointer-events: auto;
+}
+
+
+.coach-spot{
+  position: absolute;
+  left: 0; top: 0; width: 0; height: 0;
+  border-radius: 14px; 
+  box-shadow: 0 0 0 9999px rgba(0,0,0,.72);
+  pointer-events: none;               
+  transition: left .25s, top .25s, width .25s, height .25s, border-radius .25s;
+  will-change: left, top, width, height, border-radius;
+  z-index: 10001;                   
+}
+
+.next-btn.coach-force{
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
 
 </style>
 {% endblock %}
@@ -1837,25 +1863,24 @@ attachScrollHintObserver();
       const btnNext = document.getElementById('coachNext');
       const btnBack = document.getElementById('coachBack');
       const btnSkip = document.getElementById('coachSkip');
+      const uiNextBtn = document.getElementById('nextBtn');
       if(!coach || !coachDim || !coachTip || !coachText) return;
+
+
+      const coachSpot = document.createElement('div');
+      coachSpot.className = 'coach-spot';
+      coach.insertBefore(coachSpot, coachTip);
 
       const prefersReduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
       const hdrH = (document.getElementById('siteHeader')?.offsetHeight || 80);
 
-      const steps = [
-        { q: '.cards .card.active',
-          text: 'Tap this card to reveal the details. When the reading timer completes, it gets a check!',
-          prefer: 'bottom' },
-        { q: '#nextBtn',
-          text: 'After finishing a card, press here to go to the next one.',
-          prefer: 'left' },
-        { q: '#progressRing',
-          text: 'This ring shows your learning progress. The more cards you finish, the fuller it gets.',
-          prefer: 'right' },
-          { q: '.kids-collection .collect-title',
-          text: 'Your unlocked mini cards appear here. Scroll to see them and click any card to flip it!',
-          prefer: 'top' }
-      ];
+     const steps = [
+      { q: '.cards .card.active', text: 'Tap this card to reveal the details. When the reading timer completes, it gets a check!', prefer: 'bottom', shape: 'rect' },
+      { q: '#nextBtn',            text: 'After finishing a card, press here to go to the next one.',                                prefer: 'left',   shape: 'circle' },
+      { q: '#progressRing',       text: 'This ring shows your learning progress. The more cards you finish, the fuller it gets.',   prefer: 'right',  shape: 'circle' },
+      { q: '.kids-collection',    text: 'Your unlocked mini cards appear here. Scroll to see them and click any card to flip it!',  prefer: 'bottom',    shape: 'rect' }
+    ];
+
 
       let activeIndex = -1;
 
@@ -1865,55 +1890,69 @@ attachScrollHintObserver();
         return r.width > 0 && r.height > 0 && r.bottom > hdrH && r.top < window.innerHeight;
       }
 
-      function spotlightTo(el, prefer='bottom'){
-        if(!el) return;
-        const r = el.getBoundingClientRect();
-        const cx = r.left + r.width/2;
-        const cy = r.top + r.height/2 - hdrH;
-        const pad = 20;
-        const radius = Math.round(Math.hypot(r.width, r.height)/2) + pad;
+      function spotlightTo(el, prefer='bottom', shape='rect'){
+      if(!el) return;
 
-        coachDim.style.setProperty('--x', `${cx}px`);
-        coachDim.style.setProperty('--y', `${cy}px`);
-        coachDim.style.setProperty('--r', `${radius}px`);
+      const r = el.getBoundingClientRect();
+      const pad = 16;                          
+      const hdrH = (document.getElementById('siteHeader')?.offsetHeight || 80);
+
+        if (shape === 'rect'){
+          coachSpot.style.left   = (r.left - pad) + 'px';
+          coachSpot.style.top    = (r.top  - hdrH - pad) + 'px';
+          coachSpot.style.width  = (r.width  + pad*2) + 'px';
+          coachSpot.style.height = (r.height + pad*2) + 'px';
+          coachSpot.style.borderRadius = '14px';
+        } else {
+          const cx = r.left + r.width/2;
+          const cy = r.top  + r.height/2 - hdrH;
+          const rad = Math.round(Math.hypot(r.width, r.height)/2) + pad;
+          coachSpot.style.left   = (cx - rad) + 'px';
+          coachSpot.style.top    = (cy - rad) + 'px';
+          coachSpot.style.width  = (rad*2) + 'px';
+          coachSpot.style.height = (rad*2) + 'px';
+          coachSpot.style.borderRadius = '999px';
+        }
 
         const margin = 14;
-        let tipX = cx, tipY;
+        let tipX = r.left + r.width/2;
+        let tipY;
         const vw = window.innerWidth, vh = window.innerHeight - hdrH;
 
         const below = r.bottom - hdrH + margin;
-        const above = r.top - hdrH - coachTip.offsetHeight - margin;
-        const left  = r.left - coachTip.offsetWidth - margin;
-        const right = r.right + margin;
+        const above = r.top    - hdrH - coachTip.offsetHeight - margin;
+        const left  = r.left   - coachTip.offsetWidth - margin;
+        const right = r.right  + margin;
 
         function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
         switch(prefer){
           case 'top':
             tipY = (above > 0 ? above : below);
+            coachTip.style.transform = 'translate(-50%,0)';
             break;
           case 'left':
-            tipY = clamp(cy - coachTip.offsetHeight/2, 8, vh - coachTip.offsetHeight - 8);
+            tipY = clamp((r.top - hdrH) + r.height/2 - coachTip.offsetHeight/2, 8, vh - coachTip.offsetHeight - 8);
             tipX = (left > 8 ? r.left - margin : r.right + margin + coachTip.offsetWidth/2);
             coachTip.style.transform = 'translate(-100%,0)';
             break;
           case 'right':
-            tipY = clamp(cy - coachTip.offsetHeight/2, 8, vh - coachTip.offsetHeight - 8);
+            tipY = clamp((r.top - hdrH) + r.height/2 - coachTip.offsetHeight/2, 8, vh - coachTip.offsetHeight - 8);
             tipX = (right + coachTip.offsetWidth < vw - 8 ? r.right + margin + coachTip.offsetWidth/2 : r.left - margin);
-            coachTip.style.transform = (right + coachTip.offsetWidth < vw - 8) ? 'translate(-0%,0)' : 'translate(-100%,0)';
+            coachTip.style.transform = (right + coachTip.offsetWidth < vw - 8) ? 'translate(0,0)' : 'translate(-100%,0)';
             break;
           default:
             tipY = (below + coachTip.offsetHeight < vh ? below : above);
+            coachTip.style.transform = 'translate(-50%,0)';
         }
 
-        if(prefer !== 'left' && prefer !== 'right'){
-          tipX = clamp(cx, coachTip.offsetWidth/2 + 8, vw - coachTip.offsetWidth/2 - 8);
-          coachTip.style.transform = 'translate(-50%,0)';
+        if (prefer !== 'left' && prefer !== 'right'){
+          tipX = clamp(tipX, coachTip.offsetWidth/2 + 8, vw - coachTip.offsetWidth/2 - 8);
         }
-
         coachTip.style.left = `${tipX}px`;
         coachTip.style.top  = `${tipY}px`;
       }
+
 
       function scrollIntoViewIfNeeded(el){
         if(!el) return Promise.resolve();
@@ -1942,10 +1981,12 @@ attachScrollHintObserver();
 
           activeIndex = idx;
           coachText.textContent = step.text;
+          const isNextStep = step.q === '#nextBtn';
+          if (uiNextBtn) uiNextBtn.classList.toggle('coach-force', isNextStep);
 
           scrollIntoViewIfNeeded(el).then(()=>{
             requestAnimationFrame(()=>{
-              spotlightTo(el, step.prefer || 'bottom');
+              spotlightTo(el, step.prefer || 'bottom', step.shape || 'rect');
             });
           });
 
@@ -1985,7 +2026,7 @@ attachScrollHintObserver();
         if(activeIndex < 0) return;
         const step = steps[activeIndex];
         const el = document.querySelector(step.q);
-        if(el) spotlightTo(el, step.prefer || 'bottom');
+        if(el) spotlightTo(el, step.prefer || 'bottom', step.shape || 'rect');
       }
 
       function closeTutorial(saveSeen){
@@ -1998,6 +2039,7 @@ attachScrollHintObserver();
         if(saveSeen){
           try{ localStorage.setItem(TUT_KEY, '1'); }catch(_){}
         }
+        if (uiNextBtn) uiNextBtn.classList.remove('coach-force');
       }
 
       // expose public triggers

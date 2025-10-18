@@ -462,6 +462,25 @@ html[data-theme="light"] .range-card {
     inset 0 0 10px rgba(30,111,255,0.12),
     0 0 18px rgba(30,111,255,0.28);
 }
+
+
+/* Toggle row container */
+  .toggle-row{ display:flex; gap:20px; justify-content:flex-end; margin:10px 0 14px; }
+
+  /* Active look for guide-btn (uses your gradient/glow) */
+  .guide-btn.is-active{
+    --guide-scale: 1.08;
+    filter: saturate(1.25) brightness(1.03);
+    box-shadow:
+      inset 0 1px 0 #fff7cc,
+      0 6px 22px rgba(0,247,255,.38),
+      0 0 16px rgba(0,247,255,.45);
+  }
+  .guide-btn[aria-pressed="true"]{ outline:2px solid rgba(0,173,255,.35); outline-offset:2px; }
+
+
+  
+
 </style>
 {% endblock %}
 
@@ -889,9 +908,10 @@ html[data-theme="light"] .range-card {
     .rg-num.r{color:var(--red)}
     .rg-num.d-pos{color:var(--green)}
     .rg-num.d-neg{color:var(--red)}
+
   </style>
 
-  <div class="card-hd">
+  <div class="card-hd" id="ff-48h">
     <div class="rg-head">
       <span class="ws-grad">48-Hour Forecast (Red vs Green)</span>
       <!-- Animated droplet kept -->
@@ -1004,6 +1024,42 @@ html[data-theme="light"] .range-card {
       }
       return out;
     }
+
+
+
+
+    /* Simple two-panel toggle that uses .guide-btn */
+(function panelToggle(){
+  const BTN_GW    = document.getElementById('toggle-gw');
+  const BTN_SW    = document.getElementById('toggle-sw');
+  const PANEL_GW  = document.getElementById('panel-gw');
+  const PANEL_SW  = document.getElementById('panel-sw');
+
+  function setMode(mode, opts={scroll:false}){
+    const showGW = (mode === 'gw');
+
+    // show/hide panels
+    PANEL_GW.hidden = !showGW;
+    PANEL_SW.hidden =  showGW;
+
+    // button visual state + ARIA
+    BTN_GW.classList.toggle('is-active', showGW);
+    BTN_SW.classList.toggle('is-active', !showGW);
+    BTN_GW.setAttribute('aria-pressed', showGW ? 'true' : 'false');
+    BTN_SW.setAttribute('aria-pressed', showGW ? 'false' : 'true');
+
+    // persist selection
+    try{ localStorage.setItem('ff-mode', showGW ? 'gw' : 'sw'); }catch(e){}
+  }
+
+  BTN_GW?.addEventListener('click', ()=> setMode('gw', {scroll:true}));
+  BTN_SW?.addEventListener('click', ()=> setMode('sw', {scroll:true}));
+
+  // initialize from storage (default: groundwater)
+  const saved = (typeof localStorage!=='undefined' && localStorage.getItem('ff-mode')) || 'sw';
+  //setMode(saved, {scroll:false});
+  setMode('sw', {scroll:false});
+})();
 
     const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
     const pct =(v)=>v.toFixed(1)+'%';
@@ -1181,6 +1237,49 @@ html[data-theme="light"] .range-card {
 </script>
 
 <script>
+
+
+(function fixSvgDropIds(){
+  const svgs = document.querySelectorAll('.gsap-drop svg');
+  svgs.forEach((svg, i) => {
+    const suf = '-' + (i+1);
+    const grad = svg.querySelector('#dropGrad');
+    const glow = svg.querySelector('#dropGlow');
+    const blob = svg.querySelector('.drop-blob');
+    const wrap = svg.querySelector('.drop-wrap');
+
+    if (grad && blob) {
+      const newGrad = 'dropGrad' + suf;
+      grad.id = newGrad;
+      blob.setAttribute('fill', `url(#${newGrad})`);
+    }
+    if (glow && wrap) {
+      const newGlow = 'dropGlow' + suf;
+      glow.id = newGlow;
+      wrap.setAttribute('filter', `url(#${newGlow})`);
+    }
+  });
+})();
+
+
+(function animateDrops(){
+  function start(){
+    if (!window.gsap) return;
+    document.querySelectorAll('.drop-blob').forEach((el, idx) => {
+      gsap.to(el, {
+        duration: 2 + idx * 0.2,
+        scale: 1.41,
+        transformOrigin: '50% 30%',
+        yoyo: true,
+        repeat: -1,
+        ease: 'sine.inOut'
+      });
+    });
+  }
+  if (window.gsap) start();
+  else window.addEventListener('load', start);
+})();
+
   /* Detect text-clip support for gradient text (avoid invisible text in dark mode) */
   (function detectTextClip(){
     try{
@@ -1189,7 +1288,7 @@ html[data-theme="light"] .range-card {
     }catch(e){}
   })();
 
-  /* ---------- Utilities ---------- */
+  /* ---------- Utilities (for other widgets) ---------- */
   function parseTs(ts){
     if(ts==null) return new Date(NaN);
     if(typeof ts==='number'){ if(ts<1e12) ts*=1000; return new Date(ts); }

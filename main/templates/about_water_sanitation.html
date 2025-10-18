@@ -125,7 +125,7 @@
       box-shadow: 0 6px 22px rgba(0,0,0,.18);
       transition: transform .18s ease, box-shadow .18s ease;
     }
-    .card:hover{ transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,.24); }
+    .card:hover{ transform: none; box-shadow: 0 10px 30px rgba(0,0,0,.24); }
     .card h2{
       margin:0 0 .5em; font-weight:800; letter-spacing:.02em;
       font-size: clamp(20px, 2.5vw, 24px);
@@ -265,176 +265,192 @@
 
 {% block content %}
 
-  <!-- Side water bubble columns -->
-  <div class="water-bubbles side left"  id="sideBubblesL" aria-hidden="true"></div>
-  <div class="water-bubbles side right" id="sideBubblesR" aria-hidden="true"></div>
+<!-- Side water bubble columns -->
+<div class="water-bubbles side left" id="sideBubblesL" aria-hidden="true"></div>
+<div class="water-bubbles side right" id="sideBubblesR" aria-hidden="true"></div>
 
-  <!-- Underwater background (3D) -->
-  <canvas id="webgl" aria-hidden="true"></canvas>
-  <div class="light-overlay" aria-hidden="true"></div>
+<!-- Underwater background (3D) -->
+<canvas id="webgl" aria-hidden="true"></canvas>
+<div class="light-overlay" aria-hidden="true"></div>
 
-  <!-- Center glass content -->
-  <section class="about-stage">
-    <div class="glass" role="region" aria-label="About us">
+<!-- Center glass content -->
+<section class="about-stage">
+  <div class="glass" role="region" aria-label="About us">
 
-      {# ---------- Dynamic (from service) with safe fallback ---------- #}
-      {% if about %}
-        <h1 class="rainbow-title">{{ about.title }}</h1>
-        <p class="subtitle">{{ about.subtitle }}</p>
+    {# ---------- Dynamic (from service) with safe fallback ---------- #}
+    {% if about %}
+    <h1 class="rainbow-title">{{ about.title }}</h1>
+    <p class="subtitle">{{ about.subtitle }}</p>
 
-        <div class="group">
-          {% for sec in about.sections %}
-          <article class="card">
-            <h2>{{ sec.heading }}</h2>
-            {% if sec.type == 'paragraph' %}
-              <p>{{ sec.body }}</p>
-            {% else %}
-              <p>{{ sec.body }}</p>
-            {% endif %}
-          </article>
-          {% endfor %}
-        </div>
-
-        <div class="group">
-          <article class="card">
-            <h2>Value & Impact</h2>
-            <ul>
-              {% for item in about.value_impact %}
-              <li>{{ item }}</li>
-              {% endfor %}
-            </ul>
-          </article>
-
-          <article class="card">
-            <h2>Future Plans</h2>
-            <ul>
-              {% for item in about.future_plans %}
-              <li>{{ item }}</li>
-              {% endfor %}
-            </ul>
-          </article>
-        </div>
-
-        <div class="group">
-          <article class="card">
-            <h2>Our Data Sources</h2>
-            <p>
-              Water quality and environmental data come from trusted sources:
-              {% for s in about.data_sources %}
-                <a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.name }}</a>{% if not forloop.last %},{% endif %}
-              {% endfor %}.
-            </p>
-          </article>
-        </div>
-
-        <div class="group">
-          <article class="card">
-            <h2>Potential Sponsors</h2>
-
-            {% for sp in about.sponsors %}
-            <div class="sponsor"{% if not forloop.first %} style="margin-top:12px;"{% endif %}>
-              <h3><a href="{{ sp.url }}" target="_blank" rel="noopener">{{ sp.name }}</a></h3>
-              <p>{{ sp.desc }}</p>
-            </div>
-            {% endfor %}
-          </article>
-        </div>
-
-      {% else %}
-        {# ---------- Fallback: original static content ---------- #}
-        <h1 class="rainbow-title">About Us</h1>
-        <p class="subtitle">Helping families in Victoria make safe and informed choices about water activities.</p>
-
-        <div class="group">
-          <article class="card">
-            <h2>Our Mission</h2>
-            <p>
-              Help families in Victoria make safe and informed choices about water activities — such as camping, fishing, and
-              swimming — by providing clear, reliable, and easy-to-understand water information.
-            </p>
-          </article>
-
-          <article class="card">
-            <h2>Our Vision</h2>
-            <p>
-              A future where every family and child in Melbourne understands the importance of clean water and takes action to
-              protect it, contributing to SDG 6.
-            </p>
-          </article>
-
-          <article class="card">
-            <h2>Project Background</h2>
-            <p>
-              Developed by a student research team to improve public awareness of water quality in Victoria. Combines scientific
-              data with accessible design for all ages, including children.
-            </p>
-          </article>
-        </div>
-
-        <div class="group">
-          <article class="card">
-            <h2>Value & Impact</h2>
-            <ul>
-              <li>Interactive learning section for kids — children can earn “Water Protector” cards.</li>
-              <li>Melbourne Fish Map — shows local species and their info.</li>
-              <li>Simple data visualisations to understand water quality and risks.</li>
-            </ul>
-          </article>
-
-          <article class="card">
-            <h2>Future Plans</h2>
-            <ul>
-              <li>Expand water prediction coverage in Victoria.</li>
-              <li>Add more games for children.</li>
-              <li>Collaborate with environmental organisations and local councils.</li>
-              <li>Develop a mobile-friendly version.</li>
-            </ul>
-          </article>
-        </div>
-
-        <div class="group">
-          <article class="card">
-            <h2>Our Data Sources</h2>
-            <p>
-              Water quality and environmental data come from trusted sources:
-              <a href="https://www.melbournewater.com.au/" target="_blank" rel="noopener">Melbourne Water</a>,
-              <a href="https://www.epa.vic.gov.au/" target="_blank" rel="noopener">EPA Victoria</a>,
-              <a href="https://www.bom.gov.au/" target="_blank" rel="noopener">Bureau of Meteorology</a>,
-              <a href="https://www.flaticon.com/free-icons" target="_blank" rel="noopener">Flaticon</a>,
-              <a href="https://www.nationalwaterweek.org/resources/resources#;" target="_blank" rel="noopener">National Water Week</a>,
-              <a href="https://healthywaterways.com.au/key-values/platypus" target="_blank" rel="noopener">Healthy Waterways</a>.
-            </p>
-          </article>
-        </div>
-
-        <div class="group">
-          <article class="card">
-            <h2>Potential Sponsors</h2>
-
-            <div class="sponsor">
-              <h3><a href="https://www.awa.asn.au/" target="_blank" rel="noopener">Australian Water Association (AWA)</a></h3>
-              <p>
-                The Clean Water Project aligns with AWA’s mission of advancing sustainable water management and supporting the
-                next generation of water professionals. Sponsoring our project allows AWA to demonstrate its commitment to
-                education, student development, and community engagement.
-              </p>
-            </div>
-
-            <div class="sponsor" style="margin-top:12px;">
-              <h3><a href="https://www.wateraid.org/au/" target="_blank" rel="noopener">WaterAid Australia</a></h3>
-              <p>
-                WaterAid Australia is committed to improving access to safe water, sanitation, and hygiene through education and
-                community engagement. Our project aligns with this mission by raising awareness of water sustainability and
-                empowering students to contribute innovative solutions.
-              </p>
-            </div>
-          </article>
-        </div>
-      {% endif %}
-      {# ---------- End dynamic/fallback block ---------- #}
-
+    <div class="group">
+      {% for sec in about.sections %}
+      <article class="card">
+        <h2>{{ sec.heading }}</h2>
+        {% if sec.type == 'paragraph' %}
+        <p>
+          {{ sec.body|safe }}
+          {% if sec.link %}
+          <a href="{{ sec.link.url }}" target="_blank" rel="noopener">
+            {{ sec.link.text }}
+          </a>
+          {% endif %}
+          {{ sec.body_suffix|default:""|safe }}
+        </p>
+        {% endif %}
+      </article>
+      {% endfor %}
     </div>
-  </section>
+
+
+
+    <div class="group">
+      <article class="card">
+        <h2>Value & Impact</h2>
+        <ul>
+          {% for item in about.value_impact %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Future Plans</h2>
+        <ul>
+          {% for item in about.future_plans %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </article>
+    </div>
+
+    <div class="group">
+      <article class="card">
+        <h2>Our Data Sources</h2>
+        <p>
+          Water quality and environmental data come from trusted sources:
+          {% for s in about.data_sources %}
+          <a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.name }}</a>{% if not forloop.last %},{% endif %}
+          {% endfor %}.
+        </p>
+      </article>
+    </div>
+
+    <div class="group">
+      <article class="card">
+        <h2>Potential Sponsors</h2>
+
+        {% for sp in about.sponsors %}
+        <div class="sponsor" {% if not forloop.first %} style="margin-top:12px;" {% endif %}>
+          <h3><a href="{{ sp.url }}" target="_blank" rel="noopener">{{ sp.name }}</a></h3>
+          <p>{{ sp.desc }}</p>
+        </div>
+        {% endfor %}
+      </article>
+    </div>
+
+    {% else %}
+    {# ---------- Fallback: original static content ---------- #}
+    <h1 class="rainbow-title">About Us</h1>
+    <p class="subtitle">Helping families in Victoria make safe and informed choices about water activities.</p>
+
+    <div class="group">
+      <article class="card">
+        <h2>Our Mission</h2>
+        <p>
+          Help families in Victoria make safe and informed choices about water activities — such as camping, fishing,
+          and
+          swimming — by providing clear, reliable, and easy-to-understand water information.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>Our Vision</h2>
+        <p>
+          A future where every family and child in Melbourne understands the importance of clean water and takes action
+          to
+          protect it, contributing to SDG 6.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>Project Background</h2>
+        <p>
+          Developed by a student research team to improve public awareness of water quality in Victoria. Combines
+          scientific
+          data with accessible design for all ages, including children.
+        </p>
+      </article>
+    </div>
+
+    <div class="group">
+      <article class="card">
+        <h2>Value & Impact</h2>
+        <ul>
+          <li>Interactive learning section for kids — children can earn “Water Protector” cards.</li>
+          <li>Melbourne Fish Map — shows local species and their info.</li>
+          <li>Simple data visualisations to understand water quality and risks.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Future Plans</h2>
+        <ul>
+          <li>Expand water prediction coverage in Victoria.</li>
+          <li>Add more games for children.</li>
+          <li>Collaborate with environmental organisations and local councils.</li>
+          <li>Develop a mobile-friendly version.</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="group">
+      <article class="card">
+        <h2>Our Data Sources</h2>
+        <p>
+          Water quality and environmental data come from trusted sources:
+          <a href="https://www.melbournewater.com.au/" target="_blank" rel="noopener">Melbourne Water</a>,
+          <a href="https://www.epa.vic.gov.au/" target="_blank" rel="noopener">EPA Victoria</a>,
+          <a href="https://www.bom.gov.au/" target="_blank" rel="noopener">Bureau of Meteorology</a>,
+          <a href="https://www.flaticon.com/free-icons" target="_blank" rel="noopener">Flaticon</a>,
+          <a href="https://www.nationalwaterweek.org/resources/resources#;" target="_blank" rel="noopener">National
+            Water Week</a>,
+          <a href="https://healthywaterways.com.au/key-values/platypus" target="_blank" rel="noopener">Healthy
+            Waterways</a>.
+        </p>
+      </article>
+    </div>
+
+    <div class="group">
+      <article class="card">
+        <h2>Potential Sponsors</h2>
+
+        <div class="sponsor">
+          <h3><a href="https://www.awa.asn.au/" target="_blank" rel="noopener">Australian Water Association (AWA)</a>
+          </h3>
+          <p>
+            The Clean Water Project aligns with AWA’s mission of advancing sustainable water management and supporting
+            the
+            next generation of water professionals. Sponsoring our project allows AWA to demonstrate its commitment to
+            education, student development, and community engagement.
+          </p>
+        </div>
+
+        <div class="sponsor" style="margin-top:12px;">
+          <h3><a href="https://www.wateraid.org/au/" target="_blank" rel="noopener">WaterAid Australia</a></h3>
+          <p>
+            WaterAid Australia is committed to improving access to safe water, sanitation, and hygiene through education
+            and
+            community engagement. Our project aligns with this mission by raising awareness of water sustainability and
+            empowering students to contribute innovative solutions.
+          </p>
+        </div>
+      </article>
+    </div>
+    {% endif %}
+    {# ---------- End dynamic/fallback block ---------- #}
+
+  </div>
+</section>
 
   <script type="module">
     // ===== Measure fixed header height so the 3D canvas avoids it =====
@@ -651,7 +667,7 @@
             const bobY = Math.sin(t*1.2 + pivot.id*0.9) * 0.25;
             const driftZ = Math.cos(t*0.6 + pivot.id*0.7) * 0.15;
             pivot.position.x += f.vel.x * dt;
-            const bob = bobY * 2.0 * (f.yBobScale || 1); // 可調的擺幅
+            const bob = bobY * 2.0 * (f.yBobScale || 1);
             pivot.position.y = (f.baseY ?? pivot.position.y) + bob;
             pivot.position.z += driftZ * dt * 4;
 

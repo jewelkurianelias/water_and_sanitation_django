@@ -1,11 +1,236 @@
 # Water and Sanitation App
 
-# Development Approach – How our Django Site Works (v2.0)
+# Development Approach – How our Django Site Works (v3.0)
 
 **Team Info**
 
 https://docs.google.com/document/d/1VmfBaVlIy4fYxsx_ftrh-jJre13BI7cf
 
+---
+
+# What's New in Iteration 3💧
+
+## Home Page
+
+This is our **Platypure Home Page**, designed to be simple, fun, and family-friendly.
+
+- At the top, there's a navigation bar with the **Platypure logo**, main page links, and a **light/dark mode toggle**.
+- The main banner says **“Welcome to Platypure”** — showing our goal of helping families plan safe and fun water activities.
+- Below that, we have three big buttons:
+  - `Animal Map` – lets kids explore where animals live near the water.
+  - `48-Hour Water Forecast` – helps families see if it's safe to visit.
+  - `About Us` – quick info about our project.
+- At the bottom, we explain why clean water matters: safety scores, health tips, and alerts if something goes wrong.
+
+Overall, the homepage is **easy to use, bright, and playful**, made for both parents and kids.
+
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1ZIoU-DJFcntXJdpMfM48zsZfjNuH-JYM"  width="800"/>
+</p>
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=116GZs4VBTI0pXph_7HPNDsOazxfg4ab6"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=19mpb7EbVtQwITTg4WSHT4MECd3L7Ae6D"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1PvdvOi--_3INzQg14alALyf4e1wM0dbz"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1eDYbzx9yZgbl2vDUrdPoq99j6XjVZdY4"  width="800"/>
+</p>
+
+---
+
+## Platypure Loading Screen
+
+While the site loads, kids are greeted by a swimming platypus.
+
+- It appears in a cute loading screen before the homepage is ready.
+- The animation adds fun and makes the experience more playful.
+- It helps kids stay engaged while waiting — like a mini splash screen.
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1EtioGqRXpmDjjX03c1FIZ6StdJV8ynd9"  width="800"/>
+</p>
+
+---
+
+## Home Guide – Simple Tour Summary
+
+The Guide button gives a quick walkthrough of the homepage:
+
+1. Home – Return to the main page and featured sections.  
+2. Know Water Quality – Check nearby water safety based on your location.  
+3. For Kids – See animal facts and fun tools like the Animal Map.  
+4. About Us – Learn who made this and why.  
+5. Light/Dark Mode – Switch the site theme and see the background react.
+
+Each step is short and friendly, with easy Back, Skip, and Next buttons.
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1FkZEcyDa0YmFCeh15rRbfi2sIXn3rGn0"  width="800"/>
+</p>
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1NtqP6zu82FY-DxhDtL3UkSitIEk4jPrW"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1CUVZOwZYRYlcK6CNxzJS5y0UGhisnpha"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1XTW0XEyZ8KqV5mxJVs5P3OzzEhcvr9L2"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1b7pDohM3BtPQ5-CBkwGg5Tzg1Y86qBE1"  width="800"/>
+</p>
+
+
+---
+
+
+## Know Water Quality Near You – Quick Overview
+
+This page helps users check water safety predictions near them.
+
+There are two options:
+- **Groundwater Search** – type a suburb name and pick a date to see if underground water is safe.
+- **Surface Water Search** – select a river, lake, or creek + location and date to get a prediction.
+
+The system shows:
+- An overall safety score (as a percentage)
+- A category (Poor, Fair, Good)
+- How many chemicals passed vs failed
+
+This helps families know if it’s safe to use, swim, or play near that water source.
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1NNRmpAmXkLayUAtIsZWJqxSK3VkvkMj1"  width="800"/>
+</p>
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1IbnLcD5XQxxTd0uGHGTjSdhUYPaMwOaq"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1TgH9UHYs02cmneXBI7gmsPK9QgtE5KQ_"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1GxA7BIpWrk1sTxj41cbdl-qb787jmGGU"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1DYJxMQ6cSg_oKqi6qCwezqlj6HGQc-B9"  width="800"/>
+</p>
+
+
+---
+
+## For Kids – Know & Play
+
+This page is made for kids to learn fun water facts in a playful way.
+
+- Kids can flip through **Kid Cards** to discover cool facts (e.g. "95% of a tomato is water").
+- After reading each card, a progress ring fills up and cards get "unlocked".
+- Unlocked cards go into a mini **Card Collection**, like a sticker album.
+- The experience is guided step-by-step, with a tap-to-learn flow.
+- The goal is to make water knowledge simple, fun, and collectible for kids.
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1CIIdRQ717uD5J-pgR9LI0RPnk64hNxKu"  width="800"/>
+</p>
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1Ae-u4uOSM9F6H8jKrA5Kb0xwdvFttYQa"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1gXiYblpO8Cnc642WzB7TeZ-sRXSofiZa"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1g-cZr9QCYep6LcfaSpY53B3-aRODT3E2"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1qYkyoc6Nvgq0VLblAsxsPq9Dr36K0O_Y"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=19XgNPQs7Odey9SgdYVHaipQ2By9U4C3h"  width="800"/>
+</p>
+
+
+---
+
+## Animal Sightings Map
+
+This page lets kids explore animals that live near water — like dolphins, turtles, and rays!
+
+- Kids can tap the map to find nearby **animals** with fun facts (e.g. "Longer than a bed!").
+- Each discovery earns **points** and adds a card to their **Animal Collection**.
+- Animal cards show where they live, how big they are, and cute comparisons.
+- There are **score milestones** (25, 50, 75, 100) with happy reward popups.
+- The more animals kids find, the closer they get to becoming a **Water Hero**!
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1wh1Cla3IVePdtByxOYo3c5j7O7T78ViC"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1AMU7xq_zzOogiRoKSEeuGznuDbfV2YoV"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1znSjBVwyN-VqvsKtLIIXy6QfZIKSu8f6"  width="800"/>
+</p>
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=10a03h1quqqvsRPJiKQUx4Kaz4b7BiiSi"  width="800"/>
+</p>
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1QpXqLGP_luV9uR_8yxCurVBcTnHCmXqT"  width="800"/>
+</p>
+
+
+---
+
+## About Us
+
+This page explains what Platypure is and why we built it.
+
+- We want to help families in Victoria make safe choices about water activities like camping, fishing, and swimming.
+- Our mission is to give simple, reliable info that’s easy for everyone to understand.
+- Our vision is a future where clean water matters to every family and child.
+- The project also supports SDG 6 – Clean Water and Sanitation.
+- The site was built by students to make water safety more fun and family-friendly.
+
+
+<p align="left">
+  <img src="https://drive.google.com/uc?export=view&id=1vI0NlgvBaNobB0Vgei_dpZLuSCer4lF8"  width="800"/>
+</p>
+
+---
+# Development Approach – How our Django Site Works (v2.0) 
 
 ---
 

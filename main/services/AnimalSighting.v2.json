@@ -1,0 +1,954 @@
+[
+  {
+    "sighting_id": 720,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 721,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 722,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Rock blackfish ",
+    "size_text": "Upto 76 cm",
+    "comparison": "As big as a beagle dog!"
+  },
+  {
+    "sighting_id": 723,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 724,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 725,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Spotted grubfish",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 771,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 772,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Onespot puller",
+    "size_text": "Upto 15 cm",
+    "comparison": "As long as a pencil!"
+  },
+  {
+    "sighting_id": 773,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Short boarfish",
+    "size_text": "Upto 34 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 774,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 791,
+    "latitude": -38.5,
+    "longitude": 142.0,
+    "common_name": "Red velvetfish",
+    "size_text": "Upto 46 cm",
+    "comparison": "As long as a rabbit lying stretched out!"
+  },
+  {
+    "sighting_id": 811,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 819,
+    "latitude": -38.5,
+    "longitude": 144.0,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 820,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Short boarfish",
+    "size_text": "Upto 34 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 821,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Warty prowfish",
+    "size_text": "Upto 22 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 822,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Short boarfish",
+    "size_text": "Upto 34 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 823,
+    "latitude": -38.5,
+    "longitude": 144.0,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 824,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Old wife",
+    "size_text": "Upto 25 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 883,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 908,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Green turtle",
+    "size_text": "Averages 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 1013,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Warty prowfish",
+    "size_text": "Upto 22 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 1036,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1108,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 1109,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Spotted grubfish",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 1115,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Pacific ridley turtle",
+    "size_text": "About 60 cm",
+    "comparison": "As long as a house cat!"
+  },
+  {
+    "sighting_id": 1139,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1167,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 1179,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1253,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1258,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1260,
+    "latitude": -38.5,
+    "longitude": 145.5,
+    "common_name": "Green turtle",
+    "size_text": "Averages 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 1300,
+    "latitude": -38.5,
+    "longitude": 142.5,
+    "common_name": "Silver drummer",
+    "size_text": "Upto 90 cm",
+    "comparison": "As big as a labrador dog!"
+  },
+  {
+    "sighting_id": 1302,
+    "latitude": -38.5,
+    "longitude": 145.5,
+    "common_name": "Rock cale",
+    "size_text": "Upto 45 cm",
+    "comparison": "As long as a rabbit lying stretched out!"
+  },
+  {
+    "sighting_id": 1304,
+    "latitude": -39.0,
+    "longitude": 146.5,
+    "common_name": "Leatherback turtle",
+    "size_text": "Upto 3 m",
+    "comparison": "As long as a small car!"
+  },
+  {
+    "sighting_id": 1315,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Rock blackfish ",
+    "size_text": "Upto 76 cm",
+    "comparison": "As big as a beagle dog!"
+  },
+  {
+    "sighting_id": 1384,
+    "latitude": -37.5,
+    "longitude": 150.0,
+    "common_name": "Loggerhead turtle",
+    "size_text": "Averages 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 1402,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 1433,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 1547,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 1579,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Leatherback turtle",
+    "size_text": "Upto 3 m",
+    "comparison": "As long as a small car!"
+  },
+  {
+    "sighting_id": 1587,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 1601,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 1602,
+    "latitude": -38.0,
+    "longitude": 144.5,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 1603,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 1692,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Onespot puller",
+    "size_text": "Upto 15 cm",
+    "comparison": "As long as a pencil!"
+  },
+  {
+    "sighting_id": 1693,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 1733,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 1795,
+    "latitude": -38.5,
+    "longitude": 142.0,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1796,
+    "latitude": -38.5,
+    "longitude": 145.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1811,
+    "latitude": -38.5,
+    "longitude": 145.5,
+    "common_name": "Warty prowfish",
+    "size_text": "Upto 22 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 1885,
+    "latitude": -38.0,
+    "longitude": 148.0,
+    "common_name": "Southern right whale",
+    "size_text": "Upto 17 m",
+    "comparison": "As long as a pencil!"
+  },
+  {
+    "sighting_id": 1916,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1925,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 1934,
+    "latitude": -38.5,
+    "longitude": 145.5,
+    "common_name": "Giant cuttlefish",
+    "size_text": "Upto 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 1935,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Giant cuttlefish",
+    "size_text": "Upto 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 1936,
+    "latitude": -38.5,
+    "longitude": 145.5,
+    "common_name": "Luderick",
+    "size_text": "Upto 62 cm",
+    "comparison": "As long as a golden retriever puppy!"
+  },
+  {
+    "sighting_id": 1937,
+    "latitude": -38.5,
+    "longitude": 145.5,
+    "common_name": "Luderick",
+    "size_text": "Upto 62 cm",
+    "comparison": "As long as a golden retriever puppy!"
+  },
+  {
+    "sighting_id": 1948,
+    "latitude": -38.5,
+    "longitude": 142.5,
+    "common_name": "Rock blackfish ",
+    "size_text": "Upto 76 cm",
+    "comparison": "As big as a beagle dog!"
+  },
+  {
+    "sighting_id": 1979,
+    "latitude": -38.0,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 1988,
+    "latitude": -39.0,
+    "longitude": 146.0,
+    "common_name": "Red velvetfish",
+    "size_text": "Upto 46 cm",
+    "comparison": "As long as a rabbit lying stretched out!"
+  },
+  {
+    "sighting_id": 2002,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Mosaic leatherjacket",
+    "size_text": "Upto 60 cm",
+    "comparison": "As long as a house cat!"
+  },
+  {
+    "sighting_id": 2026,
+    "latitude": -38.0,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 2097,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 2117,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 2130,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Grey morwong",
+    "size_text": "Upto 74 cm",
+    "comparison": "About as long as a skateboard!"
+  },
+  {
+    "sighting_id": 2167,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 2197,
+    "latitude": -38.0,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 2277,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Eastern fiddler ray",
+    "size_text": "Upto 1.2 m",
+    "comparison": "About as long as a dining table"
+  },
+  {
+    "sighting_id": 2437,
+    "latitude": -38.0,
+    "longitude": 149.5,
+    "common_name": "Yellow-bellied seasnake",
+    "size_text": "Upto 90 cm",
+    "comparison": "As big as a labrador dog!"
+  },
+  {
+    "sighting_id": 2530,
+    "latitude": -38.5,
+    "longitude": 144.0,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 2577,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Red morwong",
+    "size_text": "Upto 65 cm",
+    "comparison": "The size of a 6 month-old baby!"
+  },
+  {
+    "sighting_id": 2625,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 2641,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "White-ear",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 2643,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Snapper",
+    "size_text": "Upto 1.3 m",
+    "comparison": "As long as a giraffe's neck!"
+  },
+  {
+    "sighting_id": 2693,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Spotted grubfish",
+    "size_text": "Upto 20 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 2737,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 2748,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Short boarfish",
+    "size_text": "Upto 34 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 2912,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Bottlenose dolphin",
+    "size_text": "Upto 3.8 m",
+    "comparison": "Longer than a bed!"
+  },
+  {
+    "sighting_id": 2935,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Eastern fiddler ray",
+    "size_text": "Upto 1.2 m",
+    "comparison": "About as long as a dining table"
+  },
+  {
+    "sighting_id": 2997,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 3057,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 3119,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 3120,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Warty prowfish",
+    "size_text": "Upto 22 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 3124,
+    "latitude": -38.5,
+    "longitude": 143.0,
+    "common_name": "Red velvetfish",
+    "size_text": "Upto 46 cm",
+    "comparison": "As long as a rabbit lying stretched out!"
+  },
+  {
+    "sighting_id": 3129,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 3130,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Yellow-bellied seasnake",
+    "size_text": "Upto 90 cm",
+    "comparison": "As big as a labrador dog!"
+  },
+  {
+    "sighting_id": 3141,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Green turtle",
+    "size_text": "Averages 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 3214,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Scissortail sergeant",
+    "size_text": "Upto 22 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 3215,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Scissortail sergeant",
+    "size_text": "Upto 22 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 3216,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 3232,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 3262,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Warty prowfish",
+    "size_text": "Upto 22 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 3341,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Southern Maori Wrasse",
+    "size_text": "Upto 40 cm",
+    "comparison": "As long as a rabbit lying stretched out!"
+  },
+  {
+    "sighting_id": 3447,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 3483,
+    "latitude": -38.0,
+    "longitude": 147.5,
+    "common_name": "Tiger shark",
+    "size_text": "Upto 5.5 m",
+    "comparison": "As big as a small car!"
+  },
+  {
+    "sighting_id": 3484,
+    "latitude": -38.0,
+    "longitude": 147.5,
+    "common_name": "Tiger shark",
+    "size_text": "Upto 5.5 m",
+    "comparison": "As big as a small car!"
+  },
+  {
+    "sighting_id": 3635,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Whitebarred boxfish",
+    "size_text": "Upto 33 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 3644,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Sergeant baker",
+    "size_text": "Upto 70 cm",
+    "comparison": "As big as a backpack!"
+  },
+  {
+    "sighting_id": 3646,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Southern fiddler ray",
+    "size_text": "Upto 1.5 m",
+    "comparison": "As long as a large snake!"
+  },
+  {
+    "sighting_id": 3667,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 3682,
+    "latitude": -38.5,
+    "longitude": 142.0,
+    "common_name": "Southern fiddler ray",
+    "size_text": "Upto 1.5 m",
+    "comparison": "As long as a large snake!"
+  },
+  {
+    "sighting_id": 3729,
+    "latitude": -38.0,
+    "longitude": 144.5,
+    "common_name": "Southern fiddler ray",
+    "size_text": "Upto 1.5 m",
+    "comparison": "As long as a large snake!"
+  },
+  {
+    "sighting_id": 3787,
+    "latitude": -38.5,
+    "longitude": 144.0,
+    "common_name": "Eastern rock lobster",
+    "size_text": "Upto 26 cm",
+    "comparison": "As long as a small loaf of bread!"
+  },
+  {
+    "sighting_id": 3856,
+    "latitude": -38.0,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 3858,
+    "latitude": -38.0,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 3874,
+    "latitude": -38.0,
+    "longitude": 145.0,
+    "common_name": "Short boarfish",
+    "size_text": "Upto 34 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 3944,
+    "latitude": -38.5,
+    "longitude": 146.5,
+    "common_name": "Green turtle",
+    "size_text": "Averages 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 3987,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Short boarfish",
+    "size_text": "Upto 34 cm",
+    "comparison": "A bit longer than your standard school ruler!"
+  },
+  {
+    "sighting_id": 4003,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Whiskered prowfish",
+    "size_text": "Upto 22 cm",
+    "comparison": "As long as an adult-sized shoe!"
+  },
+  {
+    "sighting_id": 4091,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Eastern blue groper",
+    "size_text": "Upto 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 4092,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 4126,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 4127,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Eastern blue groper",
+    "size_text": "Upto 1 m",
+    "comparison": "As long as a guitar!"
+  },
+  {
+    "sighting_id": 4209,
+    "latitude": -39.0,
+    "longitude": 146.0,
+    "common_name": "Eastern king prawn",
+    "size_text": "Upto 6 cm",
+    "comparison": "About the length of your thumb!"
+  },
+  {
+    "sighting_id": 4229,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Yellow-bellied seasnake",
+    "size_text": "Upto 90 cm",
+    "comparison": "As big as a labrador dog!"
+  },
+  {
+    "sighting_id": 4327,
+    "latitude": -38.5,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 4328,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 4329,
+    "latitude": -38.5,
+    "longitude": 145.0,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  },
+  {
+    "sighting_id": 4330,
+    "latitude": -38.0,
+    "longitude": 144.5,
+    "common_name": "Western blue groper",
+    "size_text": "Upto 1.75 m",
+    "comparison": "Can be as big as an adult woman!"
+  }
+]

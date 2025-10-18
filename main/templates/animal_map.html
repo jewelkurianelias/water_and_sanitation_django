@@ -414,6 +414,92 @@
   }
 
 
+  :root { --am-gold-deep: #C99700; }
+
+  #am-reset-score,
+  #am-reset-score *,
+  #am-reset-score .icon {
+    color: var(--am-gold-deep) !important;
+    -webkit-text-fill-color: var(--am-gold-deep); 
+  }
+
+
+  #am-reset-score:hover,
+  #am-reset-score:active,
+  #am-reset-score:disabled {
+    color: var(--am-gold-deep) !important;
+    -webkit-text-fill-color: var(--am-gold-deep);
+  }
+
+
+  #am-reset-score { text-shadow: 0 0 0.01px currentColor; }
+
+
+
+  /* ========= ≤ 992px (tablet) ========= */
+  @media (max-width: 992px){
+    .am-shell{ padding: 0 10px; }
+
+    .am-head{ grid-template-columns: 1fr; gap: 12px; align-items: start; }
+    #title-neon{ font-size: clamp(2.2rem, 6vw, 3rem) !important; }
+    .am-titlebox .am-muted{ font-size: clamp(1rem, 1.8vw, 1.2rem) !important; }
+
+    .am-heroimgs{ grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .am-img{ max-height: clamp(90px, 18vw, 150px); }
+
+    .am-split{ grid-template-columns: 1fr; }
+    .am-map{ height: 520px; }
+    .am-aside{ position: static; max-height: none; }
+
+    .am-toolbar{ gap: 6px; }
+    .am-quest{ flex-wrap: wrap; gap: 6px 10px; }
+    .am-quest .am-bar{ width: 100%; order: 3; }
+    #am-milestone{ font-size: 1rem !important; }
+    .am-count{ font-size: 2rem; }
+
+    .am-gallery .am-figure{ gap: 12px; padding: 10px; }
+    .am-gallery .am-figure img{
+      width: clamp(160px, 36vw, 240px);
+      max-width: none !important;
+    }
+    .am-gallery .am-figure strong{
+      font-size: clamp(1.05rem, 2.6vw, 1.25rem);
+      line-height: 1.15;
+      word-break: break-word;
+    }
+  }
+
+  /* ========= ≤ 680px (mobile) ========= */
+  @media (max-width: 680px){
+    #title-neon{ font-size: clamp(1.8rem, 8vw, 2.4rem) !important; }
+    .am-titlebox .am-muted{ font-size: clamp(0.95rem, 3.2vw, 1.1rem) !important; }
+
+    .am-heroimgs{ grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
+    .am-img{ max-height: clamp(70px, 22vw, 110px); }
+
+    .am-map{ height: 360px; border-radius: 10px; }
+    .am-aside{ padding: 10px 12px; }
+
+    .am-gallery .am-figure{ gap: 10px; padding: 8px; }
+    .am-gallery .am-figure img{ width: clamp(120px, 46vw, 180px); }
+    .am-gallery .am-figure strong{
+      font-size: clamp(1rem, 4.2vw, 1.2rem);
+      line-height: 1.15;
+      word-break: break-word;
+    }
+
+    .am-count{ font-size: 1.6rem; }
+
+    .am-popup{ max-width: 260px; }
+    .am-popup h4{ font-size: 1.05rem; }
+    .am-popup p{ font-size: .95rem; }
+
+    .am-cardflip{ width: 92px; height: 124px; }
+    .am-back{ font-size: .82rem; }
+    .am-back .small{ font-size: .78rem; }
+  }
+
+
 </style>
 {% endblock %}
 
@@ -561,16 +647,28 @@ function infoFor(name){
   };
 }
 
-function popupHtml(it){
-  const name = it.common_name || "Unknown";
-  const key  = normName(name);
-  const line = ONE_LINERS[key] || "I love clean seas.";
-  const home = HABITATS[key]   || "bays and reefs";
-  const photo = it.photo_url || it.icon_url || "";
-  return `<div class="am-popup">${photo?`<img src="${photo}" alt="${name}" loading="lazy"/>`:""}
-    <h4>${name}</h4><p><strong>${line}</strong></p><p class="small"><em>I live in ${home}.</em></p></div>`;
-}
+const esc = s => (s ?? "").toString()
+  .replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]));
 
+
+function popupHtml(it){
+  const name  = it.common_name || "Unknown";
+  const key   = normName(name);
+  const line  = ONE_LINERS[key] || "I love clean seas.";
+  const home  = HABITATS[key]   || "bays and reefs";
+  const size  = (it.size_text   || "").trim();      // NEW
+  const comp  = (it.comparison   || "").trim();     // NEW
+  const photo = it.photo_url || it.icon_url || "";
+
+  return `<div class="am-popup">
+    ${photo ? `<img src="${photo}" alt="${esc(name)}" loading="lazy"/>` : ""}
+    <h4>${esc(name)}</h4>
+    <p><strong>${esc(line)}</strong></p>
+    <p class="small"><strong>💦I live in ${esc(home)}</strong></p>
+    ${size ? `<p class="small">🌊 <strong>Size: ${esc(size)}</strong></p>` : ""}
+    ${comp ? `<p class="small">💧 <strong>How big: ${esc(comp)}</strong></p>` : ""} 
+  </div>`;
+}
 /* -------------------------- Icon helpers -------------------------- */
 function makeIcon(url, size=40){
   return L.divIcon({ className:'am-ico', html:`<img src="${url}" alt="">`, iconSize:[size,size], iconAnchor:[size/2,size/2], popupAnchor:[0,-size/2] });

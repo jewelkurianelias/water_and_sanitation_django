@@ -465,8 +465,8 @@
     /* Always-on black outline (both themes) */
     .why-title{
       /* thickness uses em so it scales with font-size */
-      --title-outline: rgba(0,0,0,.95);
-      --title-stroke-w: .008em;
+      --title-outline: rgba(0, 0, 0, 0.63);
+      --title-stroke-w: .0008em;
 
       -webkit-text-stroke: var(--title-stroke-w) var(--title-outline);
     }
@@ -665,7 +665,14 @@
   .water-bubbles.side{ display:none !important; }
 }
 
+@media (max-width: 680px){
+  .hero-head{ white-space: normal; flex-wrap: wrap; gap: 6px 8px; font-size: clamp(22px, 7vw, 32px); }
+  .hero-head img{ width: 28px; height: 28px; flex: 0 0 auto; }
+}
 
+@media (max-width: 360px){
+  .hero-head img{ width: 22px; height: 22px; }
+}
 
 
 
@@ -761,7 +768,7 @@
     </a>
 
     <!-- Pollution Sources -->
-    <a href="{% url 'pollution_sources' %}" class="panel-link">
+    <a href="{% url 'future_family_safety' %}#ff-48h" class="panel-link" aria-label="Go to 48-Hour Forecast">
       <article class="panel">
         <video src="{% static 'file1.mp4' %}" playsinline muted loop preload="metadata" autoplay></video>
         <div class="video-skel" aria-hidden="true"></div>
@@ -778,7 +785,7 @@
                   <path class="drop" d="M12 4 C9 8,7 10.5,7 13a5 5 0 0 0 10 0c0-2.5-2-5-5-9z"/>
                 </svg>
               </span>
-              <span>POLLUTION SOURCES</span>
+              <span>48-HOUR WATER FORECAST</span>
             </span>
           </div>
         </div>
@@ -1225,7 +1232,8 @@ function playVisibleOnly(){
     const H = Math.max(200, rect.height);
 
 
-    const COUNT = Math.round(Math.min(24, Math.max(8, H / 44)));
+    //const COUNT = Math.round(Math.min(24, Math.max(8, H / 44)));
+    const COUNT = Math.round(Math.min(48, Math.max(12, H / 28)));
 
     for (let i=0; i<COUNT; i++){
       const b = document.createElement('span');
@@ -1243,7 +1251,8 @@ function playVisibleOnly(){
       if (window.gsap){
         const drift = rand(8, 28) * (root.classList.contains('right') ? -1 : 1); 
         const up    = startY + rand(30, H*0.9);
-        const dur   = rand(5.2, 10.2);
+        //const dur   = rand(5.2, 10.2);
+        const dur   = rand(4.2, 8.0);
         const delay = rand(0, 5.5);
 
         gsap.fromTo(b,
