@@ -79,7 +79,7 @@ def _load_thresholds() -> Dict[str, Dict[str, object]]:
     with _lock:
         if _cache_thresholds is None:
             path = CONFIG_DIR / "thresholds.yaml"
-            # handle absent file gracefully
+            # ✅ handle absent file gracefully
             if not path.exists():
                 _cache_thresholds = {}
                 return _cache_thresholds
@@ -108,16 +108,6 @@ def _load_thresholds() -> Dict[str, Dict[str, object]]:
                     raise ValueError(f"Unsupported threshold type for '{name}': {type(v).__name__}")
             _cache_thresholds = norm
         return _cache_thresholds
-    
-
-def _safe_float(x):
-    try:
-        v = float(x)
-    except (TypeError, ValueError):
-        return None
-    if isinstance(v, float) and (np.isnan(v) or np.isinf(v)):
-        return None
-    return v
 
 # function for selecting suburbs for groundwater
 def _read_meta_gw() -> pd.DataFrame:
@@ -359,19 +349,19 @@ def predict_groundwater(suburb: str, date_str: str) -> Dict:
             thr = tobj.get("threshold", None)
             direction = tobj.get("direction", "below")
 
-        pred_val = _safe_float(yhat)
-        thr_val  = _safe_float(thr)
-
         ok = False
-        if pred_val is not None and thr_val is not None:
-            ok = (pred_val < thr_val) if direction == "below" else (pred_val > thr_val)
+        if yhat is not None and thr is not None:
+            if direction == "below":
+                ok = float(yhat) < float(thr)
+            else:  # "above"
+                ok = float(yhat) > float(thr)
         if ok:
             passed += 1
 
         included.append({
             "chemical": chem,
-            "predicted": pred_val,
-            "threshold": thr_val,
+            "predicted": None if yhat is None else float(yhat),
+            "threshold": None if thr != thr else float(thr),
             "direction": direction,
             "pass": bool(ok),
         })
@@ -401,8 +391,7 @@ def predict_surface(water_body: str, location: str, date_str: str) -> Dict:
     site_id = _resolve_site_id_from_sw(water_body, location)
 
     if not site_id:
-        return {"water_body": water_body, "location": location, "site_id": None,
-                "eligible": 0, "passed": 0, "percentage": 0.0, "chemicals": []}
+        return {"water_body": water_body, "location": location, "site_id": None, "eligible": 0, "passed": 0, "percentage": 0.0, "chemicals": []}
 
     included: List[Dict] = []
     eligible = 0
@@ -420,7 +409,6 @@ def predict_surface(water_body: str, location: str, date_str: str) -> Dict:
             continue
 
         yhat = _predict_value(chem, f"SITE::{site_id}", site_df, date_str)
-
         tobj = thresholds.get(chem)  # dict with threshold + direction
         thr = None
         direction = "below"
@@ -428,20 +416,19 @@ def predict_surface(water_body: str, location: str, date_str: str) -> Dict:
             thr = tobj.get("threshold", None)
             direction = tobj.get("direction", "below")
 
-        # ---- NEW: safe conversions (avoid float(None)/NaN/Inf) ----
-        pred_val = _safe_float(yhat)
-        thr_val  = _safe_float(thr)
-
         ok = False
-        if pred_val is not None and thr_val is not None:
-            ok = (pred_val < thr_val) if direction == "below" else (pred_val > thr_val)
+        if yhat is not None and thr is not None:
+            if direction == "below":
+                ok = float(yhat) < float(thr)
+            else:  # "above"
+                ok = float(yhat) > float(thr)
         if ok:
             passed += 1
 
         included.append({
             "chemical": chem,
-            "predicted": pred_val,   # None or float
-            "threshold": thr_val,    # None or float
+            "predicted": None if yhat is None else float(yhat),
+            "threshold": None if thr != thr else float(thr),
             "direction": direction,
             "pass": bool(ok),
         })
@@ -457,5 +444,3 @@ def predict_surface(water_body: str, location: str, date_str: str) -> Dict:
         "percentage": round(pct, 2),
         "chemicals": included,
     }
-
-

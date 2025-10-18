@@ -1,19 +1,16 @@
+from django.http import JsonResponse, HttpRequest
 from django.shortcuts import render
-from django.http import JsonResponse
 import json
 from django.views.decorators.http import require_GET
-from .services import diving_game_service, animal_map_service , animal_cards_service, future_family_safety_service, home_service, pollution_sources_service, pollution_sources_service
+from .services import diving_game_service, animal_map_service , animal_cards_service, future_family_safety_service, home_service, pollution_sources_service
 from .services.animal_cards_service import fetch_kids_cards, build_collect_cards_json
 from .services.about_water_sanitation_service import get_about_content
-from django.utils.html import escape
-
 from .services.explore_water_quality_service import (
     list_gw_suburbs, list_sw_water_bodies, list_sw_locations,
     predict_groundwater, predict_surface
 )
 
-from django.http import HttpRequest
-from .services.future_family_safety_service import predict_site, list_sites, health_payload
+from .services.future_family_safety_service import list_sites, health_payload
 
 # Create your views here.
 def home(request):
@@ -234,7 +231,7 @@ def future_family_safety(request):
         "site_options": list_sites(),
     }
     if site_id:
-        ctx["result"] = predict_site(site_id=site_id, horizon_days=horizon_days)
+        ctx["result"] = predict_surface(site_id=site_id, horizon_days=horizon_days)
 
     return render(request, "future_family_safety.html", ctx)
 
@@ -359,7 +356,6 @@ def api_quality_sw(request):
     return JsonResponse(res, json_dumps_params={"ensure_ascii": False})
 
 #------------------------------------------------------------
-
 
 def diving_game(request):
     return render(request, "diving_game.html")

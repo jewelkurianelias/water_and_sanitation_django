@@ -486,42 +486,24 @@ html[data-theme="light"] .range-card {
 
 {% block content %}
 <div class="container" style="max-width:1100px; margin:0 auto;">
-
-<section class="card-box" style="margin-bottom:18px; max-width:100%;padding:18px 22px; word-wrap:break-word; overflow-wrap:break-word;">
-  <h1 class="ws-grad" style="font-size:28px; font-weight:900;">Future &amp; Family Safety</h1>
-  <p class="muted" style="max-width:100%; white-space:normal; line-height:1.6;">
-    Choose <strong>Groundwater Search</strong> to check underground water quality by suburb, <br>
-    or <strong>Surface Water Search</strong> to explore rivers, lakes, and creeks by location. <br>
-    You’ll also see how water conditions are expected to change over the next 48 hours.
-  </p>
-</section>
-
-
-  <!-- Toggle buttons (uses your .guide-btn CSS) -->
-  <div class="toggle-row">
-    <button id="toggle-gw" type="button" class="guide-btn is-active" aria-pressed="true" title="Show Groundwater">
-      <span class="label">By Suburb</span>
-    </button>
-
-    <button id="toggle-sw" type="button" class="guide-btn" aria-pressed="false" title="Show Surface Water">
-      <span class="label">By Water Body</span>
-    </button>
-  </div>
-  
+  <header class="page-lead" style="margin: 8px 0 14px;">
+    <h1 class="ws-grad" style="font-size:28px; font-weight:900;">Future &amp; Family Safety</h1>
+    <p class="muted">
+      Choose <strong>Groundwater Search</strong> to check underground water quality by suburb, <br>
+      or <strong>Surface Water Search</strong> to explore rivers, lakes, and creeks by location. <br>
+      You’ll also see how water conditions are expected to change over the next 48 hours.
+    </p>
+  </header>
 
   <!-- ===================== REPLACEMENT STARTS HERE ===================== -->
-
-<!-- Groundwater (by Suburb) -->
-<section id="panel-gw" class="card-box" style="margin-bottom:18px;">
-  <div class="card-hd"><span class="ws-grad">By Suburb</span></div>
-  <div class="card-bd">
+  <!-- Groundwater (by Suburb) -->
+  <section class="card-box" style="margin-bottom:18px;">
+    <div class="card-hd"><span class="ws-grad">Groundwater (by Suburb)</span></div>
+    <div class="card-bd">
       <div class="row g-3 align-items-end">
         <div class="col-lg-5">
           <label class="form-label fw-bold" for="gw-suburb">Suburb</label>
-          <input id="gw-suburb" class="form-control-like"
-       placeholder="Type to search suburbs…" list="gw-suburb-list" autocomplete="off"
-       pattern="[A-Za-z0-9\s\-\(\)]+" title="Only letters, numbers, spaces, dashes (-), and parentheses ()">
-
+          <input id="gw-suburb" class="form-control-like" placeholder="Type to search suburbs…" list="gw-suburb-list" autocomplete="off">
           <datalist id="gw-suburb-list"></datalist>
         </div>
         <div class="col-lg-4">
@@ -534,26 +516,22 @@ html[data-theme="light"] .range-card {
       </div>
 
       <div id="gw-result" class="mt-3"></div>
-  </div>
-</section>
+    </div>
+  </section>
 
-<!-- Surface Water (by Water Body → Location) -->
-<section id="panel-sw" class="card-box" style="margin-bottom:18px;" hidden>
-  <div class="card-hd"><span class="ws-grad">By Water Body → Location</span></div>
-  <div class="card-bd">
+  <!-- Surface Water (by Water Body → Location) -->
+  <section class="card-box" style="margin-bottom:18px;">
+    <div class="card-hd"><span class="ws-grad">Surface Water (by Water Body → Location)</span></div>
+    <div class="card-bd">
       <div class="row g-3 align-items-end">
         <div class="col-lg-4">
           <label class="form-label fw-bold" for="sw-body">Water body</label>
-          <input id="sw-body" class="form-control-like"
-       placeholder="Type to search water bodies…" list="sw-body-list" autocomplete="off"
-       pattern="[A-Za-z0-9\s\-\(\)]+" title="Only letters, numbers, spaces, dashes (-), and parentheses ()">
+          <input id="sw-body" class="form-control-like" placeholder="Type to search water bodies…" list="sw-body-list" autocomplete="off">
           <datalist id="sw-body-list"></datalist>
         </div>
         <div class="col-lg-4">
           <label class="form-label fw-bold" for="sw-location">Location</label>
-          <input id="sw-location" class="form-control-like"
-       placeholder="Type to search locations…" list="sw-loc-list" autocomplete="off" disabled
-       pattern="[A-Za-z0-9\s\-\(\)]+" title="Only letters, numbers, spaces, dashes (-), and parentheses ()">
+          <input id="sw-location" class="form-control-like" placeholder="Type to search locations…" list="sw-loc-list" autocomplete="off" disabled>
           <datalist id="sw-loc-list"></datalist>
         </div>
         <div class="col-lg-4">
@@ -567,11 +545,8 @@ html[data-theme="light"] .range-card {
         </div>
       </div>
       <div id="sw-result" class="mt-3"></div>
-  </div>
-</section>
-
-
-
+    </div>
+  </section>
   <!-- ===================== REPLACEMENT ENDS HERE ===================== -->
 
   <!-- Family Safety Indicator -->
@@ -1363,86 +1338,47 @@ html[data-theme="light"] .range-card {
   }
 </script>
 
-<!-- === Explore: Groundwater / Surface Water === -->
+<!-- === NEW: JS from explore_water_quality.html for the two replacement sections === -->
 <script>
-/* -------- fetch helper -------- */
 async function fetchJSON(url){
   const r = await fetch(url);
   if(!r.ok) throw new Error(await r.text());
   return r.json();
 }
 
-/* -------- render results -------- */
 function renderBreakdown(container, title, data){
-  const idBase = (container.id === 'gw-result') ? 'gw' :
-                 (container.id === 'sw-result') ? 'sw' :
-                 ('x' + Math.random().toString(36).slice(2,6));
+  const { percentage, eligible, passed, chemicals } = data;
+  const pct = (percentage ?? 0).toFixed(2);
 
-  const pctNum   = clamp(Number(data.percentage ?? 0), 0, 100);
-  const eligible = Number(data.eligible ?? 0);
-  const passed   = Number(data.passed ?? 0);
+  const badge = (pct >= 70) ? '<span class="pill pill-good">Good</span>' :
+                (pct >= 40) ? '<span class="pill pill-fair">Fair</span>' :
+                              '<span class="pill pill-poor">Poor</span>';
 
-  // category info from global scoreInfo(): {cat:'good'|'fair'|'poor', label:'Good'|'Fair'|'Poor'}
-  const info = scoreInfo(pctNum);
-  const catLabel = info.label;
-
-  const badgeClass = (info.cat === 'good') ? 'pill-good'
-                    : (info.cat === 'fair') ? 'pill-fair' : 'pill-poor';
-
-  /* ---- P/F/G bar (shown above the KPIs) ---- */
-  const bar = `
-    <div class="safety-wrap" style="margin-bottom:12px">
-      <div class="safety-bar">
-        <div id="${idBase}-glow" class="safety-glow"></div>
-      </div>
-      <div id="${idBase}-ptr" class="safety-pointer" style="left:0%">
-        <div class="head"></div>
-        <div id="${idBase}-lbl" class="label">${catLabel}</div>
-      </div>
-    </div>
-    <div class="safety-legend">
-      <span style="color:#ef4444;">Poor</span>
-      <span style="color:#d97706;">Fair</span>
-      <span style="color:#059669;">Good</span>
-    </div>
-  `;
-
-  /* ---- KPIs (overall score animates 0 → XX) ---- */
   const head = `
-    <div class="row g-3 mt-2">
-      <div class="col-md-4">
-        <div class="card-box kpi">
-          <div class="kpi-label">Overall score</div>
-          <div class="kpi-value" id="${idBase}-score">0.00%</div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card-box kpi">
-          <div class="kpi-label">Category</div>
-          <div class="kpi-pill">
-            <span class="pill ${badgeClass}">${catLabel}</span>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card-box kpi">
-          <div class="kpi-label">Eligible</div>
-          <div class="kpi-value">${passed}/${eligible}</div>
-        </div>
-      </div>
-    </div>
-  `;
+    <div class="row g-3">
+      <div class="col-md-4"><div class="card-box kpi">
+        <div class="kpi-label">Overall score</div>
+        <div class="kpi-value">${pct}%</div>
+      </div></div>
+      <div class="col-md-4"><div class="card-box kpi">
+        <div class="kpi-label">Category</div>
+        <div class="kpi-pill">${badge}</div>
+      </div></div>
+      <div class="col-md-4"><div class="card-box kpi">
+        <div class="kpi-label">Eligible</div>
+        <div class="kpi-value">${passed}/${eligible}</div>
+      </div></div>
+    </div>`;
 
-  /* ---- Chemicals table ---- */
-  const rows = (data.chemicals || []).map(c => {
+  /* rows colored using the same palette as the safe ranges table */
+  const rows = (chemicals || []).map(c => {
     const resClass = c.pass ? 'range-safe' : 'range-unsafe';
-    const resText  = c.pass ? '✅ Pass' : '❌ Fail';
     return `
       <tr>
         <td class="chem-name">${c.chemical}</td>
         <td class="chem-num">${(c.predicted ?? '–')}</td>
         <td class="chem-num">${(c.threshold ?? '–')}</td>
-        <td class="chem-result ${resClass}">${resText}</td>
+        <td class="chem-result ${resClass}">${c.pass ? '✅ Pass' : '❌ Fail'}</td>
       </tr>`;
   }).join("");
 
@@ -1452,63 +1388,17 @@ function renderBreakdown(container, title, data){
       <div class="card-bd">
         <div class="table-responsive">
           <table class="range-table chem-table">
-            <thead>
-              <tr>
-                <th>Chemical</th>
-                <th>Predicted</th>
-                <th>Threshold</th>
-                <th>Result</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Chemical</th><th>Predicted</th><th>Threshold</th><th>Result</th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
         </div>
       </div>
     </div>`;
 
-  // Compose: bar + KPIs + table
-  container.innerHTML = bar + head + table;
-
-  // 1) Move pointer and set glow + label
-  setSafetyBar(idBase, pctNum, info.cat, catLabel);
-
-  // 2) Animate 0 → XX.XX% (change 1000 to 800 to speed up)
-  animateScore(`${idBase}-score`, pctNum, 1000);
+  container.innerHTML = head + table;
 }
 
-/* === helper: set P/F/G pointer, glow color, and label === */
-function setSafetyBar(base, score, cat, labelText){
-  const pct  = clamp(Number(score)||0, 0, 100);
-  const ptr  = document.getElementById(base+'-ptr');
-  const glow = document.getElementById(base+'-glow');
-  const lbl  = document.getElementById(base+'-lbl');
-
-  if(ptr)  ptr.style.left  = pct + '%';
-  if(glow) glow.style.left = pct + '%';
-  if(lbl)  lbl.textContent = labelText;
-
-  const C   = getColors();
-  const col = (cat==='good') ? C.haloGood : (cat==='fair') ? C.haloFair : C.haloPoor;
-  if(glow) glow.style.setProperty('--glow', col);
-}
-
-/* === helper: number animation (target 0–100), default duration 1000ms === */
-function animateScore(id, target, duration=1000){
-  const el = document.getElementById(id);
-  if(!el) return;
-  const t  = clamp(Number(target)||0, 0, 100);
-  let t0 = null;
-  function step(ts){
-    if(!t0) t0 = ts;
-    const p = Math.min(1, (ts - t0) / duration);  // change to 800 for faster animation
-    el.textContent = (t * p).toFixed(2) + '%';
-    if(p < 1) requestAnimationFrame(step);
-  }
-  el.textContent = '0.00%';
-  requestAnimationFrame(step);
-}
-
-/* -------- typeahead sources -------- */
+// ---------- Populate type-ahead sources ----------
 async function loadGWSuburbs(q=""){
   const url = q ? `/api/gw/suburbs?q=${encodeURIComponent(q)}` : `/api/gw/suburbs`;
   const data = await fetchJSON(url);
@@ -1522,152 +1412,6 @@ async function loadSWBodies(q=""){
   dl.innerHTML = (data.items || []).map(it => `<option value="${it.value}"></option>`).join("");
 }
 
-/* ===================== Validation / UX ===================== */
-const LOTTIE_JSON = "{% static 'Loading Lottie animation.json' %}";
-const AUTO_HIDE_MS = 5000;
-let lottieHandle = null;
-let lottieRetryTimer = null;
-let __loadingTimer = null; // auto-hide timer
-
-function showLoadingOverlay(){
-  const overlay = document.getElementById('loading-overlay');
-  overlay && (overlay.hidden = false);
-
-  const box = document.getElementById('lottie-box');
-
-  // clear any existing timer to avoid duplicates
-  if (__loadingTimer) {
-    clearTimeout(__loadingTimer);
-    __loadingTimer = null;
-  }
-
-  function start() {
-    if (!box) return;
-    if (!lottieHandle) {
-      lottieHandle = window.lottie.loadAnimation({
-        container: box,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: LOTTIE_JSON
-      });
-    } else {
-      lottieHandle.play();
-    }
-    // schedule auto-hide after successful start
-    __loadingTimer = setTimeout(hideLoadingOverlay, AUTO_HIDE_MS);
-  }
-
-  if (window.lottie) {
-    start();
-  } else {
-    let tries = 0;
-    clearInterval(lottieRetryTimer);
-    lottieRetryTimer = setInterval(() => {
-      tries++;
-      if (window.lottie || tries > 30) {
-        clearInterval(lottieRetryTimer);
-        if (window.lottie) start();
-        else {
-          // fallback: hide on timer if Lottie never loads
-          __loadingTimer = setTimeout(hideLoadingOverlay, AUTO_HIDE_MS);
-        }
-      }
-    }, 100);
-  }
-}
-
-function hideLoadingOverlay(){
-  const overlay = document.getElementById('loading-overlay');
-  overlay && (overlay.hidden = true);
-  if (lottieHandle) {
-    try { lottieHandle.stop(); } catch (e) {}
-  }
-  // clear timer on hide
-  if (__loadingTimer) {
-    clearTimeout(__loadingTimer);
-    __loadingTimer = null;
-  }
-}
-
-/* Allowed characters: letters / numbers / space / dash / parentheses */
-const ALLOWED_RE = /^[A-Za-z0-9\s\-\(\)]+$/;
-const norm = s => (s||'').trim().toLowerCase();
-
-function optionsFrom(datalistId){
-  return Array.from(document.querySelectorAll(`#${datalistId} option`)).map(o => norm(o.value));
-}
-
-function showMsg(title, text, icon='warning', onDone){
-  if(window.Swal){
-    Swal.fire({ title, text, icon, confirmButtonText:'OK', confirmButtonColor:'#1E6FFF' })
-        .then(()=> onDone && onDone());
-  }else{
-    alert(`${title}\n${text}`); onDone && onDone();
-  }
-}
-
-function attn(el){
-  const box = el?.closest('.card-box') || el;
-  box?.classList.add('attn');
-  setTimeout(()=> box?.classList.remove('attn'), 1600);
-  try{ el?.focus({preventScroll:true}); }catch(e){}
-  el?.scrollIntoView({block:'center', behavior:'smooth'});
-}
-
-function validateText({inputId, datalistId, label}){
-  const el = document.getElementById(inputId);
-  const v  = (el?.value || '').trim();
-
-  if(!v){
-    showMsg(`Select ${label}`, `Please choose a ${label} from the list.`, 'warning', ()=>attn(el));
-    return null;
-  }
-  if(!ALLOWED_RE.test(v)){
-    showMsg('Invalid input', 'Only letters, numbers, spaces, dashes (-), and parentheses () are allowed.', 'error', ()=>attn(el));
-    return null;
-  }
-  const opts = optionsFrom(datalistId);
-  if(opts.length && !opts.includes(norm(v))){
-    showMsg(`Invalid ${label}`, `Please select a ${label} from the suggestions.`, 'error', ()=>attn(el));
-    return null;
-  }
-  return v;
-}
-
-function validateDate({inputId, label}){
-  const el = document.getElementById(inputId);
-  const v  = el?.value || '';
-  if(!v){
-    showMsg(`Missing ${label}`, `Please pick a ${label}.`, 'warning', ()=>attn(el));
-    return null;
-  }
-  return v;
-}
-
-/* remove highlight on input */
-['gw-suburb','sw-body','sw-location','gw-date','sw-date'].forEach(id=>{
-  const el=document.getElementById(id);
-  el?.addEventListener('input', ()=> (el.closest('.card-box')||el).classList.remove('attn'));
-});
-
-/* add native pattern/title to text inputs (browser-level constraint) */
-(function addNativePatterns(){
-  const fields = [
-    ['gw-suburb','Suburb'],
-    ['sw-body','Water body'],
-    ['sw-location','Location']
-  ];
-  fields.forEach(([id,label])=>{
-    const el=document.getElementById(id);
-    if(el){
-      el.setAttribute('pattern','[A-Za-z0-9\\s\\-\\(\\)]+');
-      el.setAttribute('title','Only letters, numbers, spaces, dashes (-), and parentheses ()');
-    }
-  });
-})();
-
-/* ---------- enable Location only after Water body is chosen ---------- */
 document.getElementById("sw-body").addEventListener("change", async (e)=>{
   const body = e.target.value.trim();
   const locInput = document.getElementById("sw-location");
@@ -1681,61 +1425,38 @@ document.getElementById("sw-body").addEventListener("change", async (e)=>{
   locInput.disabled = false;
 });
 
-/* ---------- Buttons with validation + loading ---------- */
-(function bindGW(){
-  const btn = document.getElementById('gw-btn');
-  if(!btn) return;
+// ---------- Buttons ----------
+document.getElementById("gw-btn").addEventListener("click", async ()=>{
+  const suburb = document.getElementById("gw-suburb").value.trim();
+  const date = document.getElementById("gw-date").value;
+  const out = document.getElementById("gw-result");
+  out.innerHTML = "";
+  if(!suburb || !date){ out.innerHTML = `<p class="muted">Select suburb and date.</p>`; return; }
+  try{
+    const data = await fetchJSON(`/api/quality/gw?suburb=${encodeURIComponent(suburb)}&date=${encodeURIComponent(date)}`);
+    renderBreakdown(out, `Groundwater in ${suburb} (${date})`, data);
+  }catch(err){
+    out.innerHTML = `<div class="muted">Error: ${String(err).slice(0,200)}</div>`;
+  }
+});
 
-  btn.addEventListener('click', async ()=>{
-    const suburb = validateText({inputId:'gw-suburb', datalistId:'gw-suburb-list', label:'Suburb'});
-    if(!suburb) return;
-    const date = validateDate({inputId:'gw-date', label:'date'});
-    if(!date) return;
+document.getElementById("sw-btn").addEventListener("click", async ()=>{
+  const body = document.getElementById("sw-body").value.trim();
+  const loc = document.getElementById("sw-location").value.trim();
+  const date = document.getElementById("sw-date").value;
+  const out = document.getElementById("sw-result");
+  out.innerHTML = "";
+  if(!body || !loc || !date){ out.innerHTML = `<p class="muted">Select water body, location, and date.</p>`; return; }
+  try{
+    const data = await fetchJSON(`/api/quality/sw?water_body=${encodeURIComponent(body)}&location=${encodeURIComponent(loc)}&date=${encodeURIComponent(date)}`);
+    const title = `Surface water – ${body} / ${loc} (${date})`;
+    renderBreakdown(out, title, data);
+  }catch(err){
+    out.innerHTML = `<div class="muted">Error: ${String(err).slice(0,200)}</div>`;
+  }
+});
 
-    const out = document.getElementById('gw-result');
-    out.innerHTML = '';
-    showLoadingOverlay();
-    try{
-      const data = await fetchJSON(`/api/quality/gw?suburb=${encodeURIComponent(suburb)}&date=${encodeURIComponent(date)}`);
-      renderBreakdown(out, `Groundwater in ${suburb} (${date})`, data);
-    }catch(err){
-      showMsg('Request failed', String(err).slice(0,200), 'error');
-      out.innerHTML = `<div class="muted">Error: ${String(err).slice(0,200)}</div>`;
-    }finally{
-      hideLoadingOverlay();
-    }
-  });
-})();
-
-(function bindSW(){
-  const btn = document.getElementById('sw-btn');
-  if(!btn) return;
-
-  btn.addEventListener('click', async ()=>{
-    const body = validateText({inputId:'sw-body', datalistId:'sw-body-list', label:'Water body'});
-    if(!body) return;
-    const loc  = validateText({inputId:'sw-location', datalistId:'sw-loc-list', label:'Location'});
-    if(!loc) return;
-    const date = validateDate({inputId:'sw-date', label:'date'});
-    if(!date) return;
-
-    const out = document.getElementById('sw-result');
-    out.innerHTML = '';
-    showLoadingOverlay();
-    try{
-      const url = `/api/quality/sw?water_body=${encodeURIComponent(body)}&location=${encodeURIComponent(loc)}&date=${encodeURIComponent(date)}`;
-      const data = await fetchJSON(url);
-      renderBreakdown(out, `Surface water – ${body} / ${loc} (${date})`, data);
-    }catch(err){
-      showMsg('Request failed', String(err).slice(0,200), 'error');
-      out.innerHTML = `<div class="muted">Error: ${String(err).slice(0,200)}</div>`;
-    }finally{
-      hideLoadingOverlay();
-    }
-  });
-})();
-
-/* ---------- init: typeahead wiring ---------- */
+// init
 const gwSuburbInput = document.getElementById("gw-suburb");
 gwSuburbInput.addEventListener("input", (e)=> loadGWSuburbs(e.target.value.trim()));
 loadGWSuburbs("");
@@ -1754,7 +1475,6 @@ swLocInput.addEventListener("input", async (e)=>{
   document.getElementById("sw-loc-list").innerHTML =
     (data.items || []).map(it => `<option value="${it.value}"></option>`).join("");
 });
+
 </script>
-
-
 {% endblock %}

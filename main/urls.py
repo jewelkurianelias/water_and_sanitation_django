@@ -12,7 +12,6 @@ urlpatterns = [
     path("animal_map/", views.animal_map, name="animal_map"),
     path("animal_map/data/", views.animal_map_data, name="animal_map_data"),
 
-
     path("diving_game/", views.diving_game, name="diving_game"),
 
     # --- Water Quality (new) ---
